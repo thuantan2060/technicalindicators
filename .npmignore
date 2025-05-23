@@ -1,25 +1,71 @@
-# source files
-src
+# Source files
+src/
+test/
+*.test.js
+*.spec.js
 
-# dependencies
-package-lock.json
+# Documentation
+docs/
+*.md
+!README.md
 
-# conifgs
-
-.babelrc
+# Build tools and configs
+.github/
 .travis.yml
-.editorconfig
 gulpfile.js
+rollup.js
+build.sh
+develop.sh
+test.sh
 tsconfig.json
 tslint.json
-.vscode
-
-# unneeded html
-index.html
-
-
-# test
-test
-
-#editors
+.babelrc
 .editorconfig
+.dockerignore
+Dockerfile
+
+# Development files
+coverage/
+.nyc_output/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Custom files
+custom.js
+debug.js
+new.js
+newtemplatesrc.js
+index.html
+technicalindicators.html
+testdocs.html
+testdocs.js
+keltner
+
+# Images and examples
+images/
+
+# TypeScript source files (keep only compiled JS and declarations)
+# src/**/*.ts
+# test/**/*.ts
+
+# Temporary files
+*.tmp
+*.temp

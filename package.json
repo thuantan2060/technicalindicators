@@ -1,22 +1,32 @@
 {
-  "name": "technicalindicators",
+  "name": "@thuantan2060/technicalindicators",
   "version": "3.1.0",
   "description": "Techincal Indicators written in javascript",
   "main": "dist/index.js",
   "module": "lib/index.js",
   "types": "./declarations/index.d.ts",
   "jsnext:main": "lib/index.js",
+  "files": [
+    "dist",
+    "lib",
+    "declarations",
+    "tf_model",
+    "typings"
+  ],
   "scripts": {
     "cover": "babel-istanbul --include-all-sources cover -x dist/**/*.* ./node_modules/mocha/bin/_mocha -- -R spec && open coverage/lcov-report/index.html",
     "test": "mocha --compilers js:babel-register --require babel-polyfill",
     "test:watch": "mocha --watch --compilers js:babel-register --require babel-polyfill",
     "generateDts": "./generateTsDefinitions.sh",
     "build": "tsc -p . && babel-node --presets es2015 rollup.js",
-    "start": "sh test.sh"
+    "start": "sh test.sh",
+    "prepublishOnly": "npm run build && npm test && npm run validate",
+    "clean": "rimraf dist lib declarations",
+    "validate": "node scripts/validate-build.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anandanand84/technicalindicators.git"
+    "url": "git+https://github.com/thuantan2060/technicalindicators.git"
   },
   "keywords": [
     "Technical indicators",
@@ -102,13 +112,16 @@
     "Cross Down",
     "Cross Over"
   ],
-  "author": "anand.anand84@gmail.com",
+  "author": "thuantan2060@gmail.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/anandanand84/technicalindicators/issues"
+    "url": "https://github.com/thuantan2060/technicalindicators/issues"
   },
   "sideEffects": false,
-  "homepage": "https://github.com/anandanand84/technicalindicators#readme",
+  "homepage": "https://github.com/thuantan2060/technicalindicators#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/chai": "^3.0.0",
     "@types/mocha": "^2.0.0",
