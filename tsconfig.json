@@ -4,28 +4,39 @@
     "declaration": true,
     "declarationDir": "./declarations",
     "lib": [
-      "es5",
-      "es2015.iterable",
-      "es2015.collection",
-      "es2015.promise",
+      "es2018",
+      "es2018.promise",
       "dom"
     ],
-    "suppressImplicitAnyIndexErrors": true,
-    "module": "es6",
-    "target": "es6",
+    "module": "es2015",
+    "target": "es2018",
+    "moduleResolution": "node",
     "noImplicitAny": false,
     "outDir": "./lib",
     "preserveConstEnums": true,
     "removeComments": false,
-    "sourceMap": false,
-    "baseUrl": ".", // This must be specified if "paths" is.
-    "typeRoots" : ["typings", "node_modules/**/@types"]
+    "sourceMap": true,
+    "strict": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "typeRoots": ["typings", "node_modules/@types"]
   },
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "**/*-spec.ts"
+    "**/*-spec.ts",
+    "test/**/*"
   ]
 }

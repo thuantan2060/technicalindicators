@@ -1,7 +1,29 @@
 {
   "presets": [
     [
-      "es2015"
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "16"
+        },
+        "useBuiltIns": "usage",
+        "corejs": 3
+      }
+    ],
+    [
+      "@babel/preset-typescript",
+      {
+        "allowDeclareFields": true
+      }
+    ]
+  ],
+  "plugins": [
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "helpers": true,
+        "regenerator": true
+      }
     ]
   ]
 }

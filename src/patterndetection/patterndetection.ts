@@ -71,7 +71,7 @@ async function loadModel() {
     if(modelLoaded) return Promise.resolve(true);
     if(laodingModel) return loadingPromise;
     laodingModel = true;
-    loadingPromise = new Promise(async function(resolve, reject) {
+    loadingPromise = new Promise<void>(async function(resolve, reject) {
         if(isNodeEnvironment) {
             tf = require('@tensorflow/tfjs')
             console.log('Nodejs Environment detected ');
