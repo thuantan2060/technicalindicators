@@ -1,6 +1,6 @@
 var Bearish = require('../../lib/candlestick/Bearish.js').default;
 var assert                  = require('assert');
-var drawCandleStick         = require('draw-candlestick');
+var { drawCandleStick } = require('../test-helper');
 var fs                      = require('fs');
 var twoDayBearishInput = {
   open: [21.44,27.89],

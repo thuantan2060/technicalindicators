@@ -33,9 +33,9 @@ try {
 }
 
 try {
-    // Bundle TypeScript declarations
+    // Bundle TypeScript declarations using dts-bundle-generator
     console.log('📦 Bundling TypeScript declarations...');
-    execSync('npx dts-bundle --name indicators --main declarations/index.d.ts --out generated.d.ts --baseDir declarations --outputAsModuleFolder', {
+    execSync('npx dts-bundle-generator --out-file declarations/generated.d.ts declarations/index.d.ts', {
         stdio: 'inherit'
     });
     
@@ -57,7 +57,8 @@ try {
         console.log('⚠️  Generated.d.ts not created, but declarations are ready');
     }
 } catch (error) {
-    console.log('⚠️  dts-bundle failed, but basic declarations are available');
+    console.log('⚠️  dts-bundle-generator failed, but basic declarations are available');
+    console.log('Error:', error.message);
 }
 
 console.log('🎉 TypeScript declarations process completed!'); 

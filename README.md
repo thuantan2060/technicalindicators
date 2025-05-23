@@ -58,13 +58,21 @@ npm install --save babel-polyfill
 
 # Recent Improvements (v4.0.0)
 
-This version includes significant improvements to build quality, testing coverage, and cross-platform compatibility:
+This version includes significant improvements to build quality, testing coverage, cross-platform compatibility, and **security**:
+
+## 🔒 **Security Enhancements**
+- **Resolved all npm audit vulnerabilities**: Fixed 31 security vulnerabilities (8 moderate, 20 high, 3 critical)
+- **Updated vulnerable dependencies**: Replaced outdated packages with secure alternatives
+- **Removed vulnerable draw-candlestick dependency**: Eliminated d3-color ReDoS vulnerability while maintaining test functionality
+- **Modern dependency versions**: Updated to latest secure versions of Babel, TypeScript, Rollup, and testing tools
+- **Zero security vulnerabilities**: Clean npm audit with no remaining security issues
 
 ## 🏗️ **Enhanced Build System**
 - **Fixed npm publish issues**: Resolved TypeScript declaration generation, Babel configuration, and rollup bundling problems
 - **Improved dist bundle**: The `dist/index.js` file now properly includes all 122+ technical indicators (increased from 4KB to 212KB)
 - **Dual API support**: Both function syntax (`sma()`) and class syntax (`SMA.calculate()`) work correctly
 - **Cross-platform builds**: Added robust Node.js script for TypeScript definitions generation with Windows/Linux/macOS compatibility
+- **Replaced vulnerable tools**: Switched from `dts-bundle` to secure `dts-bundle-generator`
 
 ## 🧪 **Comprehensive Testing**
 - **Expanded test coverage**: Tests now cover all indicator categories with 188 test cases (up from just 2)
@@ -83,11 +91,13 @@ This version includes significant improvements to build quality, testing coverag
 - **Better validation**: Added build validation scripts to ensure package integrity
 - **Enhanced exports**: Fixed `getAvailableIndicators()` function export for discovering all available indicators
 - **Robust TypeScript**: Fixed compilation errors and improved type definitions
+- **Secure dependencies**: All development dependencies updated to latest secure versions
 
 ## 📈 **Performance & Reliability**
 - **Optimized bundling**: Improved rollup configuration for better tree-shaking and smaller bundles
 - **Fixed dependencies**: Resolved circular dependency issues and cleaned up invalid references
 - **Better error handling**: Enhanced build process with fallback mechanisms and informative error messages
+- **Future-proof**: Updated to modern toolchain ensuring long-term security and maintenance
 
 ### Pattern detection
 

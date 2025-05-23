@@ -1,7 +1,7 @@
 var Bullish = require('../../lib/candlestick/Bullish.js').default;
 var bullish = require('../../lib/candlestick/Bullish.js').bullish;
 var assert                  = require('assert');
-var drawCandleStick         = require('draw-candlestick');
+var { drawCandleStick } = require('../test-helper');
 var fs                      = require('fs');
 
 var input = {

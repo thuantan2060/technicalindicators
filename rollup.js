@@ -1,7 +1,6 @@
 const { rollup } = require('rollup');
 const resolve = require('@rollup/plugin-node-resolve').default;
 const commonjs = require('@rollup/plugin-commonjs').default;
-const builtins = require('rollup-plugin-node-builtins');
 const replace = require('@rollup/plugin-replace').default;
 const terser = require('@rollup/plugin-terser').default;
 
@@ -16,7 +15,6 @@ async function doBuild() {
           'process.env.NODE_ENV': JSON.stringify( 'production' ),
           preventAssignment: true
         }),
-        builtins(),
         resolve({
           preferBuiltins: false,
           browser: true

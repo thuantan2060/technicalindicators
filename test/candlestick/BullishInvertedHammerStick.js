@@ -1,6 +1,6 @@
 var BullishInvertedHammer = require('../../lib/candlestick/BullishInvertedHammerStick').default;
 var assert                = require('assert');
-var drawCandleStick       = require('draw-candlestick');
+var { drawCandleStick } = require('../test-helper');
 var fs                    = require('fs');
 
 var basicHammer = {
