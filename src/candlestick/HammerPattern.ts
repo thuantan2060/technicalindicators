@@ -8,10 +8,11 @@ import { bullishhammerstick } from './BullishHammerStick';
 import { bullishinvertedhammerstick } from './BullishInvertedHammerStick';
 
 export default class HammerPattern extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'HammerPattern';
         this.requiredCount = 5;
+        this.scale = scale;
     }
 
     logic (data:StockData) {
@@ -40,10 +41,10 @@ export default class HammerPattern extends CandlestickFinder {
             high: data.high.slice(start, end),
         };
 
-        let isPattern = bearishhammerstick(possibleHammerData);
-        isPattern = isPattern || bearishinvertedhammerstick(possibleHammerData);
-        isPattern = isPattern || bullishhammerstick(possibleHammerData);
-        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData);
+        let isPattern = bearishhammerstick(possibleHammerData, this.scale);
+        isPattern = isPattern || bearishinvertedhammerstick(possibleHammerData, this.scale);
+        isPattern = isPattern || bullishhammerstick(possibleHammerData, this.scale);
+        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData, this.scale);
 
         return isPattern;
     }
@@ -67,6 +68,6 @@ export default class HammerPattern extends CandlestickFinder {
     }
 }
 
-export function hammerpattern(data:StockData) {
-  return new HammerPattern().hasPattern(data);
+export function hammerpattern(data:StockData, scale: number = 1) {
+  return new HammerPattern(scale).hasPattern(data);
 }

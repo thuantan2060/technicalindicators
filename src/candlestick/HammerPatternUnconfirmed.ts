@@ -2,8 +2,8 @@ import StockData from '../StockData';
 import HammerPattern from './HammerPattern';
 
 export default class HammerPatternUnconfirmed extends HammerPattern {
-    constructor() {
-        super();
+    constructor(scale: number = 1) {
+        super(scale);
         this.name = 'HammerPatternUnconfirmed';
     }
 
@@ -14,6 +14,6 @@ export default class HammerPatternUnconfirmed extends HammerPattern {
    }
 }
 
-export function hammerpatternunconfirmed(data:StockData) {
-  return new HammerPatternUnconfirmed().hasPattern(data);
+export function hammerpatternunconfirmed(data:StockData, scale: number = 1) {
+  return new HammerPatternUnconfirmed(scale).hasPattern(data);
 }

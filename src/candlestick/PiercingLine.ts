@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class PiercingLine extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.requiredCount  = 2;
         this.name = 'PiercingLine';
+        this.scale = scale;
     }
     logic (data:StockData) {
         let firstdaysOpen   = data.open[0];
@@ -30,6 +31,6 @@ export default class PiercingLine extends CandlestickFinder {
    }
 }
 
-export function piercingline(data:StockData) {
-  return new PiercingLine().hasPattern(data);
+export function piercingline(data:StockData, scale: number = 1) {
+  return new PiercingLine(scale).hasPattern(data);
 }

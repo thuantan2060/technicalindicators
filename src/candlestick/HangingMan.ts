@@ -6,10 +6,11 @@ import { bearishhammerstick } from './BearishHammerStick';
 import { bullishhammerstick } from './BullishHammerStick';
 
 export default class HangingMan extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'HangingMan';
         this.requiredCount = 5;
+        this.scale = scale;
     }
 
     logic (data:StockData) {
@@ -38,8 +39,8 @@ export default class HangingMan extends CandlestickFinder {
             high: data.high.slice(start, end),
         };
 
-        let isPattern = bearishhammerstick(possibleHammerData);
-        isPattern = isPattern || bullishhammerstick(possibleHammerData);
+        let isPattern = bearishhammerstick(possibleHammerData, this.scale);
+        isPattern = isPattern || bullishhammerstick(possibleHammerData, this.scale);
 
         return isPattern;
     }
@@ -63,6 +64,6 @@ export default class HangingMan extends CandlestickFinder {
     }
 }
 
-export function hangingman(data:StockData) {
-  return new HangingMan().hasPattern(data);
+export function hangingman(data:StockData, scale: number = 1) {
+  return new HangingMan(scale).hasPattern(data);
 }

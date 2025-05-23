@@ -2,6 +2,8 @@ import StockData from '../StockData';
 export default class CandlestickFinder {
     requiredCount:number
     name:string
+    scale:number
+
     constructor() {
         // if (new.target === Abstract) {
         //     throw new TypeError("Abstract class");
@@ -9,7 +11,7 @@ export default class CandlestickFinder {
     }
     approximateEqual(a:number, b:number):boolean {
         let left = parseFloat(Math.abs(a - b).toPrecision(4)) * 1;
-        let right = parseFloat((a * 0.001).toPrecision(4)) * 1; 
+        let right = parseFloat((a * 0.001 * this.scale).toPrecision(4)) * 1; 
         return  left <= right 
     }
     

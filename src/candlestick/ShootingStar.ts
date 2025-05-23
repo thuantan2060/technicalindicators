@@ -6,10 +6,11 @@ import { bearishinvertedhammerstick } from './BearishInvertedHammerStick';
 import { bullishinvertedhammerstick } from './BullishInvertedHammerStick';
 
 export default class ShootingStar extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'ShootingStar';
         this.requiredCount = 5;
+        this.scale = scale;
     }
 
     logic (data:StockData) {
@@ -38,8 +39,8 @@ export default class ShootingStar extends CandlestickFinder {
             high: data.high.slice(start, end),
         };
 
-        let isPattern = bearishinvertedhammerstick(possibleHammerData);
-        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData);
+        let isPattern = bearishinvertedhammerstick(possibleHammerData, this.scale);
+        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData, this.scale);
 
         return isPattern;
     }
@@ -63,6 +64,6 @@ export default class ShootingStar extends CandlestickFinder {
     }
 }
 
-export function shootingstar(data:StockData) {
-  return new ShootingStar().hasPattern(data);
+export function shootingstar(data:StockData, scale: number = 1) {
+  return new ShootingStar(scale).hasPattern(data);
 }

@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class ThreeBlackCrows extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'ThreeBlackCrows';
         this.requiredCount  = 3;
+        this.scale = scale;
     }
     logic (data:StockData) {
         let firstdaysOpen   = data.open[0];
@@ -36,6 +37,6 @@ export default class ThreeBlackCrows extends CandlestickFinder {
      }
 }
 
-export function threeblackcrows(data:StockData) {
-  return new ThreeBlackCrows().hasPattern(data);
+export function threeblackcrows(data:StockData, scale: number = 1) {
+  return new ThreeBlackCrows(scale).hasPattern(data);
 }

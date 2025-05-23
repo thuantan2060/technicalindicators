@@ -4,10 +4,11 @@ import CandlestickFinder from './CandlestickFinder';
 
 
 export default class EveningDojiStar extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'EveningDojiStar';
         this.requiredCount  = 3;
+        this.scale = scale;
     }
     logic (data:StockData) {
         let firstdaysOpen   = data.open[0];
@@ -25,7 +26,7 @@ export default class EveningDojiStar extends CandlestickFinder {
          
         let firstdaysMidpoint = ((firstdaysOpen+firstdaysClose)/2);
         let isFirstBullish    = firstdaysClose > firstdaysOpen;
-        let dojiExists        =  new Doji().hasPattern({
+        let dojiExists        =  new Doji(this.scale).hasPattern({
                                     "open" : [seconddaysOpen],
                                     "close": [seconddaysClose],
                                     "high" : [seconddaysHigh],
@@ -43,6 +44,6 @@ export default class EveningDojiStar extends CandlestickFinder {
 }
 
 
-export function eveningdojistar(data:StockData) {
-  return new EveningDojiStar().hasPattern(data);
+export function eveningdojistar(data:StockData, scale: number = 1) {
+  return new EveningDojiStar(scale).hasPattern(data);
 }

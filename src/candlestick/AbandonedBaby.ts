@@ -4,10 +4,11 @@ import Doji from './Doji';
 
 
 export default class AbandonedBaby extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'AbandonedBaby';
         this.requiredCount  = 3;
+        this.scale = scale;
     }
     logic (data:StockData) {
         let firstdaysOpen   = data.open[0];
@@ -38,6 +39,6 @@ export default class AbandonedBaby extends CandlestickFinder {
      }
 }
 
-export function abandonedbaby(data:StockData) {
-    return new AbandonedBaby().hasPattern(data);
+export function abandonedbaby(data:StockData, scale: number = 1) {
+    return new AbandonedBaby(scale).hasPattern(data);
 } 

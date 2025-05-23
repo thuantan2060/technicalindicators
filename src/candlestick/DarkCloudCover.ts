@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class DarkCloudCover extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'DarkCloudCover';
         this.requiredCount  = 2;
+        this.scale = scale;
     }
     logic (data:StockData) {
         let firstdaysOpen   = data.open[0];
@@ -29,6 +30,6 @@ export default class DarkCloudCover extends CandlestickFinder {
    }
 }
 
-export function darkcloudcover(data:StockData) {
-  return new DarkCloudCover().hasPattern(data);
+export function darkcloudcover(data:StockData, scale: number = 1) {
+  return new DarkCloudCover(scale).hasPattern(data);
 }

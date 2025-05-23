@@ -15,37 +15,40 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 import TweezerBottom from './TweezerBottom';
 
-let bullishPatterns = [
-    new BullishEngulfingPattern(),
-    new DownsideTasukiGap(),
-    new BullishHarami(),
-    new BullishHaramiCross(),
-    new MorningDojiStar(),
-    new MorningStar(),
-    new BullishMarubozu(),
-    new PiercingLine(),
-    new ThreeWhiteSoldiers(),
-    new BullishHammerStick(),
-    new BullishInvertedHammerStick(),
-    new HammerPattern(),
-    new HammerPatternUnconfirmed(),
-    new TweezerBottom()
-];
-
 export default class BullishPatterns extends CandlestickFinder {
-    constructor() {
+    bullishPatterns: CandlestickFinder[];
+    
+    constructor(scale: number = 1) {
         super();
         this.name = 'Bullish Candlesticks';
+        this.scale = scale;
+        
+        this.bullishPatterns = [
+            new BullishEngulfingPattern(scale),
+            new DownsideTasukiGap(scale),
+            new BullishHarami(scale),
+            new BullishHaramiCross(scale),
+            new MorningDojiStar(scale),
+            new MorningStar(scale),
+            new BullishMarubozu(scale),
+            new PiercingLine(scale),
+            new ThreeWhiteSoldiers(scale),
+            new BullishHammerStick(scale),
+            new BullishInvertedHammerStick(scale),
+            new HammerPattern(scale),
+            new HammerPatternUnconfirmed(scale),
+            new TweezerBottom(scale)
+        ];
     }
 
-    hasPattern (data:StockData) {
-        return bullishPatterns.reduce(function(state, pattern) {
+    hasPattern(data: StockData) {
+        return this.bullishPatterns.reduce(function (state, pattern) {
             let result = pattern.hasPattern(data);
             return state || result;
         }, false)
     }
 }
 
-export function bullish(data:StockData) {
-  return new BullishPatterns().hasPattern(data);
+export function bullish(data: StockData, scale: number = 1) {
+    return new BullishPatterns(scale).hasPattern(data);
 }

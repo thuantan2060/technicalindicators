@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class BearishMarubozu extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'BearishMarubozu';
         this.requiredCount  = 1;
+        this.scale = scale;
     }
     logic (data:StockData) {
         let daysOpen  = data.open[0];
@@ -23,6 +24,6 @@ export default class BearishMarubozu extends CandlestickFinder {
     }
 }
 
-export function bearishmarubozu(data:StockData) {
-  return new BearishMarubozu().hasPattern(data);
+export function bearishmarubozu(data:StockData, scale: number = 1) {
+  return new BearishMarubozu(scale).hasPattern(data);
 }

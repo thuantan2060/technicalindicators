@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class GraveStoneDoji extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.requiredCount  = 1;
         this.name = 'GraveStoneDoji';
+        this.scale = scale;
     }
     logic (data:StockData) {
         let daysOpen   = data.open[0];
@@ -19,6 +20,6 @@ export default class GraveStoneDoji extends CandlestickFinder {
     }
 }
 
-export function gravestonedoji(data:StockData) {
-  return new GraveStoneDoji().hasPattern(data);
+export function gravestonedoji(data:StockData, scale: number = 1) {
+  return new GraveStoneDoji(scale).hasPattern(data);
 }

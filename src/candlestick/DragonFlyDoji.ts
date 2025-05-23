@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class DragonFlyDoji extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.requiredCount  = 1;
         this.name = 'DragonFlyDoji';
+        this.scale = scale;
     }
     logic (data:StockData) {
         let daysOpen   = data.open[0];
@@ -19,6 +20,6 @@ export default class DragonFlyDoji extends CandlestickFinder {
     }
 }
 
-export function dragonflydoji(data:StockData) {
-  return new DragonFlyDoji().hasPattern(data);
+export function dragonflydoji(data:StockData, scale: number = 1) {
+  return new DragonFlyDoji(scale).hasPattern(data);
 }

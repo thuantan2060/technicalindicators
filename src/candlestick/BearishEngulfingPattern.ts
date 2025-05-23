@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class BearishEngulfingPattern extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'BearishEngulfingPattern';
         this.requiredCount  = 2;
+        this.scale = scale;
     }
     logic (data:StockData) {
         let firstdaysOpen   = data.open[0];
@@ -26,6 +27,6 @@ export default class BearishEngulfingPattern extends CandlestickFinder {
    }
 }
 
-export function bearishengulfingpattern(data:StockData) {
-    return new BearishEngulfingPattern().hasPattern(data);
+export function bearishengulfingpattern(data:StockData, scale: number = 1) {
+    return new BearishEngulfingPattern(scale).hasPattern(data);
 }

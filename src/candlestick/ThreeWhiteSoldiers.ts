@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class ThreeWhiteSoldiers extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'ThreeWhiteSoldiers';
         this.requiredCount  = 3;
+        this.scale = scale;
     }
     logic (data:StockData) {
         let firstdaysOpen   = data.open[0];
@@ -36,6 +37,6 @@ export default class ThreeWhiteSoldiers extends CandlestickFinder {
      }
 }
 
-export function threewhitesoldiers(data:StockData) {
-  return new ThreeWhiteSoldiers().hasPattern(data);
+export function threewhitesoldiers(data:StockData, scale: number = 1) {
+  return new ThreeWhiteSoldiers(scale).hasPattern(data);
 }

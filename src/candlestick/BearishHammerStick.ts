@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class BearishHammerStick extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'BearishHammerStick';
         this.requiredCount  = 1;
+        this.scale = scale;
     }
     logic (data:StockData) {
         let daysOpen  = data.open[0];
@@ -21,6 +22,6 @@ export default class BearishHammerStick extends CandlestickFinder {
     }
 }
 
-export function bearishhammerstick(data:StockData) {
-  return new BearishHammerStick().hasPattern(data);
+export function bearishhammerstick(data:StockData, scale: number = 1) {
+  return new BearishHammerStick(scale).hasPattern(data);
 }

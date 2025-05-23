@@ -15,36 +15,39 @@ import TweezerTop from './TweezerTop';
 import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
-let bearishPatterns = [
-    new BearishEngulfingPattern(),
-    new BearishHarami(),
-    new BearishHaramiCross(),
-    new EveningDojiStar(),
-    new EveningStar(),
-    new BearishMarubozu(),
-    new ThreeBlackCrows(),
-    new BearishHammerStick(),
-    new BearishInvertedHammerStick(),
-    new HangingMan(),
-    new HangingManUnconfirmed(),
-    new ShootingStar(),
-    new ShootingStarUnconfirmed(),
-    new TweezerTop()
-];
-
 export default class BearishPatterns extends CandlestickFinder {
-    constructor() {
+    bearishPatterns: CandlestickFinder[];
+    
+    constructor(scale: number = 1) {
         super();
         this.name = 'Bearish Candlesticks';
+        this.scale = scale;
+        
+        this.bearishPatterns = [
+            new BearishEngulfingPattern(scale),
+            new BearishHarami(scale),
+            new BearishHaramiCross(scale),
+            new EveningDojiStar(scale),
+            new EveningStar(scale),
+            new BearishMarubozu(scale),
+            new ThreeBlackCrows(scale),
+            new BearishHammerStick(scale),
+            new BearishInvertedHammerStick(scale),
+            new HangingMan(scale),
+            new HangingManUnconfirmed(scale),
+            new ShootingStar(scale),
+            new ShootingStarUnconfirmed(scale),
+            new TweezerTop(scale)
+        ];
     }
 
     hasPattern (data:StockData) {
-        return bearishPatterns.reduce(function(state, pattern) {
+        return this.bearishPatterns.reduce(function(state, pattern) {
             return state || pattern.hasPattern(data);
         }, false)
     }
 }
 
-export function bearish(data:StockData){
-    return new BearishPatterns().hasPattern(data);
+export function bearish(data:StockData, scale: number = 1){
+    return new BearishPatterns(scale).hasPattern(data);
 }

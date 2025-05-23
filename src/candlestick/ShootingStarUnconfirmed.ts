@@ -2,8 +2,8 @@ import StockData from '../StockData';
 import ShootingStar from './ShootingStar';
 
 export default class ShootingStarUnconfirmed extends ShootingStar {
-    constructor() {
-        super();
+    constructor(scale: number = 1) {
+        super(scale);
         this.name = 'ShootingStarUnconfirmed';
     }
 
@@ -14,6 +14,6 @@ export default class ShootingStarUnconfirmed extends ShootingStar {
     }
 }
 
-export function shootingstarunconfirmed(data:StockData) {
-  return new ShootingStarUnconfirmed().hasPattern(data);
+export function shootingstarunconfirmed(data:StockData, scale: number = 1) {
+  return new ShootingStarUnconfirmed(scale).hasPattern(data);
 }

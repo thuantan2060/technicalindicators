@@ -4,14 +4,15 @@ import { averageloss } from '../Utils/AverageLoss';
 import { averagegain } from '../Utils/AverageGain';
 
 export default class TweezerBottom extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'TweezerBottom';
         this.requiredCount = 5;
+        this.scale = scale;
     }
 
     logic (data:StockData) {
-        return this.downwardTrend(data) && data.low[3] == data.low[4];
+        return this.downwardTrend(data) && this.approximateEqual(data.low[3], data.low[4]);
     }
 
     downwardTrend (data:StockData) {
@@ -23,6 +24,6 @@ export default class TweezerBottom extends CandlestickFinder {
     }
 }
 
-export function tweezerbottom(data:StockData) {
-  return new TweezerBottom().hasPattern(data);
+export function tweezerbottom(data:StockData, scale: number = 1) {
+  return new TweezerBottom(scale).hasPattern(data);
 }

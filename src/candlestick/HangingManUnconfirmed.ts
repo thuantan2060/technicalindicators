@@ -2,8 +2,8 @@ import StockData from '../StockData';
 import HangingMan from './HangingMan';
 
 export default class HangingManUnconfirmed extends HangingMan {
-    constructor() {
-        super();
+    constructor(scale: number = 1) {
+        super(scale);
         this.name = 'HangingManUnconfirmed';
     }
 
@@ -14,6 +14,6 @@ export default class HangingManUnconfirmed extends HangingMan {
     }
 }
 
-export function hangingmanunconfirmed(data:StockData) {
-  return new HangingManUnconfirmed().hasPattern(data);
+export function hangingmanunconfirmed(data:StockData, scale: number = 1) {
+  return new HangingManUnconfirmed(scale).hasPattern(data);
 }

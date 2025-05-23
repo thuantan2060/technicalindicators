@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class EveningStar extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'EveningStar';
         this.requiredCount  = 3;
+        this.scale = scale;
     }
     logic (data:StockData) {
         let firstdaysOpen   = data.open[0];
@@ -36,6 +37,6 @@ export default class EveningStar extends CandlestickFinder {
      }
 }
 
-export function eveningstar(data:StockData) {
-  return new EveningStar().hasPattern(data);
+export function eveningstar(data:StockData, scale: number = 1) {
+  return new EveningStar(scale).hasPattern(data);
 }

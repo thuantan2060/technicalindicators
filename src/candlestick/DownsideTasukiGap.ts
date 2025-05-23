@@ -2,10 +2,11 @@ import StockData from '../StockData';
 import CandlestickFinder from './CandlestickFinder';
 
 export default class DownsideTasukiGap extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.requiredCount  = 3;
         this.name = 'DownsideTasukiGap';
+        this.scale = scale;
     }
     logic (data:StockData) {
         let firstdaysOpen   = data.open[0];
@@ -35,6 +36,6 @@ export default class DownsideTasukiGap extends CandlestickFinder {
    }
 }
 
-export function downsidetasukigap(data:StockData) {
-  return new DownsideTasukiGap().hasPattern(data);
+export function downsidetasukigap(data:StockData, scale: number = 1) {
+  return new DownsideTasukiGap(scale).hasPattern(data);
 }

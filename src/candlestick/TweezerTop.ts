@@ -4,14 +4,15 @@ import { averageloss } from '../Utils/AverageLoss';
 import { averagegain } from '../Utils/AverageGain';
 
 export default class TweezerTop extends CandlestickFinder {
-    constructor() {
+    constructor(scale: number = 1) {
         super();
         this.name = 'TweezerTop';
         this.requiredCount = 5;
+        this.scale = scale;
     }
 
     logic (data:StockData) {
-        return this.upwardTrend(data) && data.high[3] == data.high[4];
+        return this.upwardTrend(data) && this.approximateEqual(data.high[3], data.high[4]);
     }
 
     upwardTrend (data:StockData) {
@@ -23,6 +24,6 @@ export default class TweezerTop extends CandlestickFinder {
     }
 }
 
-export function tweezertop(data:StockData) {
-  return new TweezerTop().hasPattern(data);
+export function tweezertop(data:StockData, scale: number = 1) {
+  return new TweezerTop(scale).hasPattern(data);
 }
