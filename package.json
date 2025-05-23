@@ -1,14 +1,13 @@
 {
   "name": "@thuantan2060/technicalindicators",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "Techincal Indicators written in javascript",
   "main": "dist/index.js",
   "module": "lib/index.js",
   "types": "./declarations/index.d.ts",
   "jsnext:main": "lib/index.js",
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "dist",

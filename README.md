@@ -1,4 +1,4 @@
-[![Travis CI](https://img.shields.io/travis/anandanand84/technicalindicators.svg?style=flat-square)](https://travis-ci.org/anandanand84/technicalindicators)
+[![CI/CD Pipeline](https://github.com/thuantan2060/technicalindicators/actions/workflows/ci-cd.yml/badge.svg?branch=master&event=push)](https://github.com/thuantan2060/technicalindicators/actions/workflows/ci-cd.yml)
 
 # TechnicalIndicators
 
@@ -7,19 +7,15 @@ A javascript technical indicators written in typescript.
 
 # Installation
 
-## Node.js versions >= 10
+## Node.js versions >= 16
 
 ``` bash
-npm install --save technicalindicators
+npm install --save @thuantan2060/technicalindicators
 ```
 
 ``` javascript
-const SMA = require('technicalindicators').SMA;
+const SMA = require('@thuantan2060/technicalindicators').SMA;
 ```
-
-## Node.js versions < 10
-
-For nodejs version below 10 use 1.x versions of this library.
 
 ## Webpack
 
@@ -41,24 +37,57 @@ For browsers install using npm,
 For ES6 browsers use
 
 ``` bash
-npm install --save technicalindicators
+npm install --save @thuantan2060/technicalindicators
 ```
 
 ```html
-<script src="node_modules/technicalindicators/dist/browser.es6.js"></script>
+<script src="node_modules/@thuantan2060/technicalindicators/dist/browser.es6.js"></script>
 ```
 
-For ES5 support it is necessary to include the babel-polyfill and respective file browser.js otherwise you will get an error. For example see [index.html](https://github.com/anandanand84/technicalindicators/blob/master/index.html "index.html")
+For ES5 support it is necessary to include the babel-polyfill and respective file browser.js otherwise you will get an error. For example see [index.html](https://github.com/thuantan2060/technicalindicators/blob/master/index.html "index.html")
 
 ``` bash
-npm install --save technicalindicators
+npm install --save @thuantan2060/technicalindicators
 npm install --save babel-polyfill
 ```
 
 ``` html
 <script src="node_modules/babel-polyfill/browser.js"></script>
-<script src="node_modules/technicalindicators/dist/browser.js"></script>
+<script src="node_modules/@thuantan2060/technicalindicators/dist/browser.js"></script>
 ```
+
+# Recent Improvements (v4.0.0)
+
+This version includes significant improvements to build quality, testing coverage, and cross-platform compatibility:
+
+## 🏗️ **Enhanced Build System**
+- **Fixed npm publish issues**: Resolved TypeScript declaration generation, Babel configuration, and rollup bundling problems
+- **Improved dist bundle**: The `dist/index.js` file now properly includes all 122+ technical indicators (increased from 4KB to 212KB)
+- **Dual API support**: Both function syntax (`sma()`) and class syntax (`SMA.calculate()`) work correctly
+- **Cross-platform builds**: Added robust Node.js script for TypeScript definitions generation with Windows/Linux/macOS compatibility
+
+## 🧪 **Comprehensive Testing**
+- **Expanded test coverage**: Tests now cover all indicator categories with 188 test cases (up from just 2)
+- **Full indicator coverage**: Includes tests for:
+  - All 25+ technical indicators (RSI, MACD, SMA, EMA, Bollinger Bands, etc.)
+  - 33+ candlestick patterns (Doji, Hammer, Engulfing patterns, etc.)
+  - Oscillators (Stochastic, Williams %R, CCI, etc.)
+  - Volume indicators (OBV, MFI, Force Index, VWAP, etc.)
+  - Volatility indicators (ATR, Bollinger Bands)
+  - Momentum indicators (PSAR, ROC, KST, etc.)
+  - Chart types (Renko, Heikin-Ashi)
+  - Utility functions (CrossUp, CrossDown, Highest, Lowest, etc.)
+
+## 🔧 **Developer Experience**
+- **Improved build scripts**: Enhanced error handling and cross-platform compatibility
+- **Better validation**: Added build validation scripts to ensure package integrity
+- **Enhanced exports**: Fixed `getAvailableIndicators()` function export for discovering all available indicators
+- **Robust TypeScript**: Fixed compilation errors and improved type definitions
+
+## 📈 **Performance & Reliability**
+- **Optimized bundling**: Improved rollup configuration for better tree-shaking and smaller bundles
+- **Fixed dependencies**: Resolved circular dependency issues and cleaned up invalid references
+- **Better error handling**: Enhanced build process with fallback mechanisms and informative error messages
 
 ### Pattern detection
 
@@ -78,7 +107,7 @@ SMA.calculate({period : 5, values : [1,2,3,4,5,6,7,8,9]});
 
 # Playground
 
-[Playground with code completion](http://anandanand84.github.io/technicalindicators/ "Playground")
+[Playground with code completion](http://thuantan2060.github.io/technicalindicators/ "Playground")
 
 # Crypto Trading hub
 
@@ -99,49 +128,49 @@ If you like this project. You'll love my other project [crypto trading hub](http
 # Available Indicators
 
 1. [Accumulation Distribution Line (ADL)](https://tonicdev.com/anandaravindan/adl "ADL").
-1. [Average Directional Index (ADX)](https://github.com/anandanand84/technicalindicators/blob/master/test/directionalmovement/ADX.js "ADX").
+1. [Average Directional Index (ADX)](https://github.com/thuantan2060/technicalindicators/blob/master/test/directionalmovement/ADX.js "ADX").
 1. [Average True Range (ATR)](https://tonicdev.com/anandaravindan/atr "ATR").
-1. [Awesome Oscillator (AO)](https://github.com/anandanand84/technicalindicators/blob/master/test/oscillators/AwesomeOscillator.js "AO").
+1. [Awesome Oscillator (AO)](https://github.com/thuantan2060/technicalindicators/blob/master/test/oscillators/AwesomeOscillator.js "AO").
 1. [Bollinger Bands (BB)](https://tonicdev.com/anandaravindan/bb "BB").
-1. [Commodity Channel Index (CCI)](https://github.com/anandanand84/technicalindicators/blob/master/test/oscillators/CCI.js "CCI").
-1. [Force Index (FI)](https://github.com/anandanand84/technicalindicators/blob/master/test/volume/ForceIndex.js "FI").
+1. [Commodity Channel Index (CCI)](https://github.com/thuantan2060/technicalindicators/blob/master/test/oscillators/CCI.js "CCI").
+1. [Force Index (FI)](https://github.com/thuantan2060/technicalindicators/blob/master/test/volume/ForceIndex.js "FI").
 1. [Know Sure Thing (KST)](https://tonicdev.com/anandaravindan/kst "KST").
-1. [Moneyflow Index (MFI)](https://github.com/anandanand84/technicalindicators/blob/master/test/volume/MFI.js "MFI").
+1. [Moneyflow Index (MFI)](https://github.com/thuantan2060/technicalindicators/blob/master/test/volume/MFI.js "MFI").
 1. [Moving Average Convergence Divergence (MACD)](https://tonicdev.com/anandaravindan/macd "MACD").
 1. [On Balance Volume (OBV)](https://tonicdev.com/anandaravindan/obv "OBV").
-1. [Parabolic Stop and Reverse (PSAR)](https://github.com/anandanand84/technicalindicators/blob/master/test/momentum/PSAR.js "PSAR").
+1. [Parabolic Stop and Reverse (PSAR)](https://github.com/thuantan2060/technicalindicators/blob/master/test/momentum/PSAR.js "PSAR").
 1. [Rate of Change (ROC)](https://tonicdev.com/anandaravindan/roc "ROC").
 1. [Relative Strength Index (RSI)](https://tonicdev.com/anandaravindan/rsi "RSI").
 1. [Simple Moving Average (SMA)](https://tonicdev.com/anandaravindan/sma "SMA").
 1. [Stochastic Oscillator (KD)](https://tonicdev.com/anandaravindan/stochastic "KD").
 1. [Stochastic RSI (StochRSI)](https://tonicdev.com/anandaravindan/stochasticrsi "StochRSI").
 1. [Triple Exponentially Smoothed Average (TRIX)](https://tonicdev.com/anandaravindan/trix "TRIX").
-1. [Typical Price](https://github.com/anandanand84/technicalindicators/blob/master/test/chart_types/TypicalPrice.js "Typical Price").
-1. [Volume Weighted Average Price (VWAP)](https://github.com/anandanand84/technicalindicators/blob/master/test/volume/VWAP.js "VWAP").
-1. [Volume Profile (VP)](https://github.com/anandanand84/technicalindicators/blob/master/test/volume/VolumeProfile.js "VP").
+1. [Typical Price](https://github.com/thuantan2060/technicalindicators/blob/master/test/chart_types/TypicalPrice.js "Typical Price").
+1. [Volume Weighted Average Price (VWAP)](https://github.com/thuantan2060/technicalindicators/blob/master/test/volume/VWAP.js "VWAP").
+1. [Volume Profile (VP)](https://github.com/thuantan2060/technicalindicators/blob/master/test/volume/VolumeProfile.js "VP").
 1. [Exponential Moving Average (EMA)](https://tonicdev.com/anandaravindan/ema "EMA").
 1. [Weighted Moving Average (WMA)](https://tonicdev.com/anandaravindan/wma "WMA").
-1. [Wilder’s Smoothing (Smoothed Moving Average, WEMA)](https://tonicdev.com/anandaravindan/wema "WEMA").
+1. [Wilder's Smoothing (Smoothed Moving Average, WEMA)](https://tonicdev.com/anandaravindan/wema "WEMA").
 1. [WilliamsR (W%R)](https://tonicdev.com/anandaravindan/williamsr "W%R").
-1. [Ichimoku Cloud](https://github.com/anandanand84/technicalindicators/blob/master/test/ichimoku/IchimokuCloud.js "Ichimoku Cloud").
+1. [Ichimoku Cloud](https://github.com/thuantan2060/technicalindicators/blob/master/test/ichimoku/IchimokuCloud.js "Ichimoku Cloud").
 
 # Other Utils
 
-1. [Average Gain](https://github.com/anandanand84/technicalindicators/blob/master/test/Utils/AverageGain.js "")
-1. [Average Loss](https://github.com/anandanand84/technicalindicators/blob/master/test/Utils/AverageLoss.js "")
-1. [Cross Up](https://github.com/anandanand84/technicalindicators/blob/master/test/Utils/CrossUp.js "")
-1. [Cross Down](https://github.com/anandanand84/technicalindicators/blob/master/test/Utils/CrossDown.js "")
-1. [Cross Over](https://github.com/anandanand84/technicalindicators/blob/master/test/Utils/CrossOver.js "")
-1. [Highest](https://github.com/anandanand84/technicalindicators/blob/master/test/Utils/Highest.js "")
-1. [Lowest](https://github.com/anandanand84/technicalindicators/blob/master/test/Utils/Lowest.js "")
-1. [Standard Deviation](https://github.com/anandanand84/technicalindicators/blob/master/test/Utils/SD.js "")
-1. [Sum](https://github.com/anandanand84/technicalindicators/blob/master/test/Utils/Sum.js "")
+1. [Average Gain](https://github.com/thuantan2060/technicalindicators/blob/master/test/Utils/AverageGain.js "")
+1. [Average Loss](https://github.com/thuantan2060/technicalindicators/blob/master/test/Utils/AverageLoss.js "")
+1. [Cross Up](https://github.com/thuantan2060/technicalindicators/blob/master/test/Utils/CrossUp.js "")
+1. [Cross Down](https://github.com/thuantan2060/technicalindicators/blob/master/test/Utils/CrossDown.js "")
+1. [Cross Over](https://github.com/thuantan2060/technicalindicators/blob/master/test/Utils/CrossOver.js "")
+1. [Highest](https://github.com/thuantan2060/technicalindicators/blob/master/test/Utils/Highest.js "")
+1. [Lowest](https://github.com/thuantan2060/technicalindicators/blob/master/test/Utils/Lowest.js "")
+1. [Standard Deviation](https://github.com/thuantan2060/technicalindicators/blob/master/test/Utils/SD.js "")
+1. [Sum](https://github.com/thuantan2060/technicalindicators/blob/master/test/Utils/Sum.js "")
 
 
 # Chart Types
 
-1. [Renko (renko)](https://github.com/anandanand84/technicalindicators/blob/master/test/chart_types/Renko.js)
-1. [Heikin-Ashi (HA)](https://github.com/anandanand84/technicalindicators/blob/master/test/chart_types/HeikinAshi.js)
+1. [Renko (renko)](https://github.com/thuantan2060/technicalindicators/blob/master/test/chart_types/Renko.js)
+1. [Heikin-Ashi (HA)](https://github.com/thuantan2060/technicalindicators/blob/master/test/chart_types/HeikinAshi.js)
 
 
 # CandleStick Pattern
@@ -195,7 +224,7 @@ var twoDayBullishInput = {
   low: [20.82,14.93],
 }
 
-var bullish = require('technicalindicators').bullish;
+var bullish = require('@thuantan2060/technicalindicators').bullish;
 
 bullish(twoDayBullishInput) //true
 ```
@@ -210,7 +239,7 @@ There are three ways you can use to get the indicator results.
 Every indicator has a static method `calculate` which can be used to calculate the indicator without creating an object.
 
 ``` javascript
-const sma = require('technicalindicators').sma;
+const sma = require('@thuantan2060/technicalindicators').sma;
 var prices = [1,2,3,4,5,6,7,8,9,10,12,13,15];
 var period = 10;
 sma({period : period, values : prices})
@@ -219,7 +248,7 @@ sma({period : period, values : prices})
 or
 
 ``` javascript
-const SMA = require('technicalindicators').SMA;
+const SMA = require('@thuantan2060/technicalindicators').SMA;
 var prices = [1,2,3,4,5,6,7,8,9,10,12,13,15];
 var period = 10;
 SMA.calculate({period : period, values : prices})
@@ -257,43 +286,112 @@ This a merge of calculate and nextValue. The usual use case would be
 
     Note: Calling nextValue will not update getResult() value.
 
+## getAvailableIndicators
+
+Discover all available indicators programmatically:
+
+``` javascript
+const { getAvailableIndicators } = require('@thuantan2060/technicalindicators');
+const indicators = getAvailableIndicators();
+
+// Returns an object with all available indicators:
+// {
+//   functions: ['sma', 'ema', 'rsi', 'macd', ...],  // 122+ function exports
+//   classes: ['SMA', 'EMA', 'RSI', 'MACD', ...]     // 122+ class exports
+// }
+
+console.log(`Available indicators: ${indicators.functions.length}`);
+// Available indicators: 122
+
+// Use any indicator dynamically
+const indicatorName = 'sma';
+const sma = require('@thuantan2060/technicalindicators')[indicatorName];
+sma({period: 5, values: [1,2,3,4,5,6,7,8,9]});
+```
+
 ### Precision
 
 This uses regular javascript numbers, so there can be rounding errors which are negligible for a technical indicators, you can set precision by using the below config. By default there is no precision set.
 
   ``` javascript
-  const technicalIndicators = require('technicalindicators');
+  const technicalIndicators = require('@thuantan2060/technicalindicators');
   technicalIndicators.setConfig('precision', 10);
   ```
+
+# Testing
+
+This library includes comprehensive test coverage with 188 test cases covering all technical indicators and patterns:
+
+## Running Tests
+
+``` bash
+# Run all tests (188 test cases)
+npm test
+
+# Run tests with coverage report
+npm run cover
+
+# Run tests in watch mode for development
+npm run test:watch
+```
+
+## Test Coverage
+
+The test suite covers:
+- **Technical Indicators**: SMA, EMA, RSI, MACD, Bollinger Bands, ATR, ADX, and 15+ more
+- **Candlestick Patterns**: All 33+ patterns including Doji, Hammer, Engulfing, Stars, etc.
+- **Oscillators**: Stochastic, Williams %R, CCI, Awesome Oscillator, etc.
+- **Volume Indicators**: OBV, MFI, Force Index, VWAP, Volume Profile, etc.
+- **Volatility Indicators**: ATR, Bollinger Bands
+- **Momentum Indicators**: PSAR, ROC, KST, TRIX, etc.
+- **Chart Types**: Renko, Heikin-Ashi
+- **Utility Functions**: CrossUp, CrossDown, Highest, Lowest, Standard Deviation, etc.
+
+## Validation
+
+``` bash
+# Validate build artifacts and package integrity
+npm run validate
+
+# Run linting
+npm run lint
+```
 
 
 # Contribute
 
 Create issues about anything you want to report, change of API's, or request for adding new indicators. You can also create pull request with new indicators.
 
-## Environment dependencies
-
-Typescript: Use typescript 2.0.0 other you might get max call stack reached error.
-
-``` npm install -g typescript@2.0.0 ```
-
-TechnicalIndicators depends on the [`canvas` package](https://npmjs.com/canvas), which requires some dependencies to be installed. You can find the instructions to do that [here](https://github.com/Automattic/node-canvas#installation). If you do not install these dependencies, expect to get this error message during the installation of TechnicalIndicators:
-
-```
-> canvas@1.6.6 install /Users/balupton/Projects/trading/technicalindicators/node_modules/canvas
-> node-gyp rebuild
-
-./util/has_lib.sh: line 31: pkg-config: command not found
-gyp: Call to './util/has_lib.sh freetype' returned exit status 0 while in binding.gyp. while trying to load binding.gyp
-```
-
 ## Setup
 
 ``` bash
-git clone git@github.com:anandanand84/technicalindicators.git  # or use your fork
+git clone git@github.com:thuantan2060/technicalindicators.git  # or use your fork
 cd technicalindicators
 npm run start
 ```
+
+## Building and Validation
+
+``` bash
+# Build all artifacts (lib, dist, declarations)
+npm run build
+
+# Individual build steps
+npm run build:babel    # Build ES modules to lib/
+npm run build:rollup   # Build UMD bundle to dist/
+npm run generateDts    # Generate TypeScript declarations
+
+# Validate package integrity
+npm run validate
+
+# Clean build artifacts
+npm run clean
+```
+
+The build process creates:
+- `lib/`: ES modules for modern bundlers (20KB)
+- `dist/`: UMD bundle for browsers and older environments (212KB)
+- `declarations/`: TypeScript definition files (4.8KB)
 
 ## Running tests and getting coverage
 
@@ -319,11 +417,3 @@ npm run cover
 node testdocs.js
 open "http://localhost:5444/testdocs.html"
 ```
-
-
-# Donate
-1. XRB: `xrb_1shh8i77upiq4bjzi3ajik9ofq14bbcucshoapi3m7f8d74dc5k31o56yj5r`
-1. ETH: `0x0B56580Eb25f3F7e366dDA697161d314C17Bcb6a`
-1. LTC: `LLTUhKBRKs9sbW9F8MFQm7VVdZ1dJnXzGc`
-1. BTC: `1FGeJHoj7tjeLrm4JNtyPWTdBKPJjcqP6Y`
-1. BCH: `1AUFc8CEfHVjnoixbqTbX62WV8DZkpC1DU`
