@@ -37,4 +37,3 @@ node_modules
 lib
 dist
 declarations
-test/**/images
