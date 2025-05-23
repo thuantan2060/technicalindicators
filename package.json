@@ -22,8 +22,6 @@
     "test:watch": "mocha --watch --require @babel/register --require core-js/stable --require regenerator-runtime/runtime --recursive test/",
     "lint": "eslint src/**/*.ts --fix",
     "generateDts": "node generateTsDefinitions.js",
-    "generateDts:win": "cmd /c generateTsDefinitions.bat",
-    "generateDts:unix": "./generateTsDefinitions.sh",
     "build": "npm run clean && npm run build:babel && npm run build:rollup && npm run generateDts",
     "build:babel": "babel src --out-dir lib --extensions \".ts,.js\" --source-maps",
     "build:rollup": "node --require @babel/register rollup.js",
