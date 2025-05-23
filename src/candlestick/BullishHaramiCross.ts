@@ -18,7 +18,7 @@ export default class BullishHaramiCross extends CandlestickFinder {
         let seconddaysLow   = data.low[1]
 
 		let isBullishHaramiCrossPattern = ((firstdaysOpen > seconddaysOpen) && 
-		(firstdaysClose < seconddaysOpen)&&
+		(firstdaysClose <= seconddaysOpen) &&
 		(firstdaysClose < seconddaysClose)&& 
 		(firstdaysOpen  > seconddaysLow)&&
                                (firstdaysHigh  > seconddaysHigh)); 
