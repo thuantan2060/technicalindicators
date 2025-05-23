@@ -251,15 +251,17 @@ describe('Common candlestick utilities : ', function() {
   })
   
   it('Approximate Equal return true when value is less than 0.1 percent of difference', function() {
-   var results = CandlestickFinder.prototype.approximateEqual.call(null ,1 , 1.001);
-   assert.deepEqual(results, true, 'Approximate equal returns fals when true');
-   var results = CandlestickFinder.prototype.approximateEqual.call(null ,10 , 10.01);
-   assert.deepEqual(results, true, 'Approximate equal returns fals when true');
-   var results = CandlestickFinder.prototype.approximateEqual.call(null ,100 , 100.1);
-   assert.deepEqual(results, true, 'Approximate equal returns fals when true');
-   var results = CandlestickFinder.prototype.approximateEqual.call(null ,1000 , 1001);
-   assert.deepEqual(results, true, 'Approximate equal returns fals when true');
-   var results = CandlestickFinder.prototype.approximateEqual.call(null ,10000 , 10010);
-   assert.deepEqual(results, true, 'Approximate equal returns fals when true');
+   // Create a mock instance with scale property for testing
+   var mockInstance = { scale: 1 };
+   var results = CandlestickFinder.prototype.approximateEqual.call(mockInstance, 1, 1.001);
+   assert.deepEqual(results, true, 'Approximate equal returns false when true');
+   var results = CandlestickFinder.prototype.approximateEqual.call(mockInstance, 10, 10.01);
+   assert.deepEqual(results, true, 'Approximate equal returns false when true');
+   var results = CandlestickFinder.prototype.approximateEqual.call(mockInstance, 100, 100.1);
+   assert.deepEqual(results, true, 'Approximate equal returns false when true');
+   var results = CandlestickFinder.prototype.approximateEqual.call(mockInstance, 1000, 1001);
+   assert.deepEqual(results, true, 'Approximate equal returns false when true');
+   var results = CandlestickFinder.prototype.approximateEqual.call(mockInstance, 10000, 10010);
+   assert.deepEqual(results, true, 'Approximate equal returns false when true');
   })
 })
