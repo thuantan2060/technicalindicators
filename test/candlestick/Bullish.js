@@ -14,7 +14,7 @@ var input = {
 describe('BullishPattern : ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/Bullish.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/Bullish.svg',imageBuffer);
   });
   it('Check whether the supplied data has Bullish pattern', function() {
    var BullishPattern = new Bullish ();

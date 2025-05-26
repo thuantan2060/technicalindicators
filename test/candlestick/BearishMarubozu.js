@@ -13,7 +13,7 @@ var input = {
 describe('BearishMarubozu : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/BearishMarubozu.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/BearishMarubozu.svg',imageBuffer);
   });
   it('Check whether the supplied data has BearishMarubozu pattern', function() {
    var bearishMarubozu = new BearishMarubozu();

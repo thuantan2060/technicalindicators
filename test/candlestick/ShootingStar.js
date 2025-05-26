@@ -28,7 +28,7 @@ describe('Shooting Star : ', function() {
    before(function() {
     shootingStarData.forEach((patternSet) => {
       var imageBuffer = drawCandleStick(patternSet.data);
-      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}ShootingStar.png`,imageBuffer);
+      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}ShootingStar.svg`,imageBuffer);
     });
   });
   shootingStarData.forEach((patternSet) => {

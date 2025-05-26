@@ -5,7 +5,7 @@ var sma = require('../dist/index.js').sma;
 var cci = require('../dist/index.js').cci;
 var AvailableIndicators = require('../dist/index.js').getAvailableIndicators;
 var assert = require('assert');
-var data   = require('./data')
+var data   = require('./data.js')
 
 var prices = data.close;
 

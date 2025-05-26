@@ -13,7 +13,7 @@ var testData = {
 describe('Tweezer Bottom : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(testData);
-    fs.writeFileSync(`${__dirname}/images/TweezerBottom.png`,imageBuffer);
+    fs.writeFileSync(`${__dirname}/images/TweezerBottom.svg`,imageBuffer);
   });
   it(`Check whether the supplied data has Tweezer Bottom`, function() {
     var tweezerBottom = new TweezerBottom();

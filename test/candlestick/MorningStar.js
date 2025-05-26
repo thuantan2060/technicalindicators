@@ -20,7 +20,7 @@ var input = {
 describe('MorningStar : ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/MorningStar.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/MorningStar.svg',imageBuffer);
   });
   it('Check whether the supplied data has MorningStar pattern', function() {
    var morningStar = new MorningStar ();

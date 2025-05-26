@@ -46,7 +46,7 @@ describe('Hammer Pattern (Unconfirmed) : ', function() {
    before(function() {
     hammerData.forEach((patternSet) => {
       var imageBuffer = drawCandleStick(patternSet.data);
-      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}HammerPatternUnconfirmed.png`,imageBuffer);
+      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}HammerPatternUnconfirmed.svg`,imageBuffer);
     });
   });
   hammerData.forEach((patternSet) => {

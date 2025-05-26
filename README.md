@@ -63,7 +63,7 @@ This version includes significant improvements to build quality, testing coverag
 ## 🔒 **Security Enhancements**
 - **Resolved all npm audit vulnerabilities**: Fixed 31 security vulnerabilities (8 moderate, 20 high, 3 critical)
 - **Updated vulnerable dependencies**: Replaced outdated packages with secure alternatives
-- **Removed vulnerable draw-candlestick dependency**: Eliminated d3-color ReDoS vulnerability while maintaining test functionality
+- **Replaced vulnerable draw-candlestick with ApexCharts**: Eliminated d3-color ReDoS vulnerability while maintaining test functionality
 - **Modern dependency versions**: Updated to latest secure versions of Babel, TypeScript, Rollup, and testing tools
 - **Zero security vulnerabilities**: Clean npm audit with no remaining security issues
 

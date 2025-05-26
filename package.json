@@ -20,6 +20,7 @@
     "cover": "nyc --include-all-sources --include=\"dist/**/*.js\" --exclude=\"dist/**/*.spec.js\" mocha --require @babel/register --require core-js/stable --require regenerator-runtime/runtime && open coverage/lcov-report/index.html",
     "test": "mocha --require @babel/register --require core-js/stable --require regenerator-runtime/runtime --recursive test/",
     "test:watch": "mocha --watch --require @babel/register --require core-js/stable --require regenerator-runtime/runtime --recursive test/",
+    "test:charts": "node test/run-unit-tests.js",
     "lint": "eslint src/**/*.ts --fix",
     "generateDts": "node generateTsDefinitions.js",
     "build": "npm run clean && npm run build:babel && npm run build:rollup && npm run generateDts",
@@ -149,8 +150,14 @@
     "@types/node": "^20.14.12",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
+    "apexcharts": "^4.7.0",
+    "canvas": "^3.1.0",
     "chai": "^4.5.0",
+    "chart.js": "^4.4.9",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "chartjs-chart-financial": "^0.2.1",
     "core-js": "^3.37.1",
+    "date-fns": "^4.1.0",
     "dts-bundle-generator": "^9.5.1",
     "eslint": "^8.57.0",
     "mocha": "^10.7.0",
@@ -158,10 +165,10 @@
     "regenerator-runtime": "^0.14.1",
     "rimraf": "^6.0.1",
     "rollup": "^4.20.0",
+    "svg2png-wasm": "^1.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   },
-  "optionalDependencies": {},
   "dependencies": {
     "@types/node": "^20.14.12"
   }

@@ -13,7 +13,7 @@ var input = {
 describe('ThreeBlackCrows : ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/ThreeBlackCrows.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/ThreeBlackCrows.svg',imageBuffer);
   });
   it('Check whether the supplied data has ThreeBlackCrows pattern', function() {
    var threeBlackCrows = new ThreeBlackCrows ();

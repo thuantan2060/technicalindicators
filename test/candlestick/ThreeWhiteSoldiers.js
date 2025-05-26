@@ -13,7 +13,7 @@ var input = {
 describe('ThreeWhiteSoldiers : ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/ThreeWhiteSoldiers.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/ThreeWhiteSoldiers.svg',imageBuffer);
   });
   it('Check whether the supplied data has ThreeWhiteSoldiers pattern', function() {
    var threeWhiteSoldiers = new ThreeWhiteSoldiers ();

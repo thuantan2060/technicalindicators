@@ -13,7 +13,7 @@ var basicHammer = {
 describe('Bearish Inverted Hammer (Single Stick) : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(basicHammer);
-    fs.writeFileSync(__dirname+'/images/BearishInvertedHammerStick.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/BearishInvertedHammerStick.svg',imageBuffer);
   });
   it('Check whether the supplied data has Bearish Inverted Hammer (Single Stick) pattern', function() {
    var bearishInvertedHammer = new BearishInvertedHammer();

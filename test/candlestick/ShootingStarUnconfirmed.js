@@ -28,7 +28,7 @@ describe('Shooting Star (Unconfirmed) : ', function() {
    before(function() {
     shootingStarData.forEach((patternSet) => {
       var imageBuffer = drawCandleStick(patternSet.data);
-      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}ShootingStarUnconfirmed.png`,imageBuffer);
+      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}ShootingStarUnconfirmed.svg`,imageBuffer);
     });
   });
   shootingStarData.forEach((patternSet) => {

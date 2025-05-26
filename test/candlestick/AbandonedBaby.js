@@ -13,7 +13,7 @@ var input = {
 describe('AbandonedBaby : ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/abandonedbaby.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/abandonedbaby.svg',imageBuffer);
   });
   it('Check whether the supplied data has AbandonedBaby pattern', function() {
    var abandonedBaby = new AbandonedBaby ();

@@ -28,7 +28,7 @@ describe('Hanging Man (Unconfirmed) : ', function() {
    before(function() {
     hangingManData.forEach((patternSet) => {
       var imageBuffer = drawCandleStick(patternSet.data);
-      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}HangingManUnconfirmed.png`,imageBuffer);
+      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}HangingManUnconfirmed.svg`,imageBuffer);
     });
   });
   hangingManData.forEach((patternSet) => {

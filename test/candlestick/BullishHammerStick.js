@@ -13,7 +13,7 @@ var basicHammer = {
 describe('Bullish Hammer (Single Stick): ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(basicHammer);
-    fs.writeFileSync(__dirname+'/images/BullishHammerStick.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/BullishHammerStick.svg',imageBuffer);
   });
   it('Check whether the supplied data has Bullish Hammer (Single Stick) pattern', function() {
    var bullishHammer = new BullishHammer();

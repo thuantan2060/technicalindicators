@@ -19,7 +19,7 @@ var oneDayBearishInput = {
 describe('BearishEngulfingPattern : ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(twoDayBearishInput);
-    fs.writeFileSync(__dirname+'/images/bearishEngulfing.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/bearishEngulfing.svg',imageBuffer);
   });
   it('Check whether the supplied data has BearishEngulfingPattern pattern', function() {
    var bearishEngulfingPattern = new BearishEngulfingPattern ();

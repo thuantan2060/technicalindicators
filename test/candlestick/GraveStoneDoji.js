@@ -22,7 +22,7 @@ var inputDot = {
 describe('GraveStoneDoji : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/graveStoneDoji.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/graveStoneDoji.svg',imageBuffer);
   });
   it('Check whether the supplied data has GraveStoneDoji pattern', function() {
    var graveStoneDoji = new GraveStoneDoji();

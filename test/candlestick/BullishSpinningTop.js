@@ -4,17 +4,17 @@ var { drawCandleStick } = require('../test-helper');
 var fs                      = require('fs');
 
 var input = {
-  open: [20.50],
-  high: [20.87],
-  close: [20.62],
-  low: [20.23],
+  open: [3320.145],
+  high: [3345.496],
+  close: [3300.17],
+  low: [3279.276],
   
 }
 
 describe('BullishSpinningTop : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/BullishSpinningTop.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/BullishSpinningTop.svg',imageBuffer);
   });
   it('Check whether the supplied data has BullishSpinningTop pattern', function() {
    var bullishSpinningTop = new BullishSpinningTop ();

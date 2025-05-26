@@ -28,7 +28,7 @@ describe('Hanging Man : ', function() {
    before(function() {
     hangingManData.forEach((patternSet) => {
       var imageBuffer = drawCandleStick(patternSet.data);
-      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}HangingMan.png`,imageBuffer);
+      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}HangingMan.svg`,imageBuffer);
     });
   });
   hangingManData.forEach((patternSet) => {

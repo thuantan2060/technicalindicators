@@ -13,7 +13,7 @@ var input = {
 describe('BullishEngulfingPattern : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/bullishEngulfingPattern.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/bullishEngulfingPattern.svg',imageBuffer);
   });
   it('Check whether the supplied data has BullishEngulfingPattern pattern', function() {
    var bullishEngulfingPattern = new BullishEngulfingPattern ();

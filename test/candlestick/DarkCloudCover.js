@@ -14,7 +14,7 @@ var input = {
 describe('DarkCloudCover: ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/darkCloudCover.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/darkCloudCover.svg',imageBuffer);
   });
   it('Check whether the supplied data has DarkCloudCover pattern', function() {
    var darkCloudCover = new DarkCloudCover ();

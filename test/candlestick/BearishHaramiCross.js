@@ -14,7 +14,7 @@ var input = {
 describe('BearishHaramiCross: ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/BearishHaramiCross.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/BearishHaramiCross.svg',imageBuffer);
   });
   it('Check whether the supplied data has BearishHaramiCross pattern', function() {
    var bearishHaramiCross = new BearishHaramiCross ();

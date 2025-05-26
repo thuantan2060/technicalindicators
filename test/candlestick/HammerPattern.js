@@ -46,7 +46,7 @@ describe('Hammer Pattern : ', function() {
    before(function() {
     hammerData.forEach((patternSet) => {
       var imageBuffer = drawCandleStick(patternSet.data);
-      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}HammerPattern.png`,imageBuffer);
+      fs.writeFileSync(`${__dirname}/images/${patternSet.name.replace(' ', '')}HammerPattern.svg`,imageBuffer);
     });
   });
   hammerData.forEach((patternSet) => {

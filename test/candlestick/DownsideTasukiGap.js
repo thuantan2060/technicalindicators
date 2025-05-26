@@ -14,7 +14,7 @@ var input = {
 describe('DownsideTasukiGap : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/downsideTasukiGap.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/downsideTasukiGap.svg',imageBuffer);
   });
   it('Check whether the supplied data has DownsideTasukiGap pattern', function() {
    var downsideTasukiGap = new DownsideTasukiGap ();

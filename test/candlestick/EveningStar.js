@@ -13,7 +13,7 @@ var input = {
 describe('EveningStar : ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/EveningStar.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/EveningStar.svg',imageBuffer);
   });
   it('Check whether the supplied data has EveningStar pattern', function() {
    var eveningStar = new EveningStar ();

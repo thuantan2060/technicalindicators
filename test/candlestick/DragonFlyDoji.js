@@ -22,7 +22,7 @@ var inputDot = {
 describe('DragonFlyDoji : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/dragonFlyDoji.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/dragonFlyDoji.svg',imageBuffer);
   });
   it('Check whether the supplied data has DragonFlyDoji pattern', function() {
    var dragonFlyDoji = new DragonFlyDoji();

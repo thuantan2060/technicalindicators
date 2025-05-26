@@ -14,7 +14,7 @@ var input = {
 describe('BearishSpinningTop : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/BearishSpinningTop.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/BearishSpinningTop.svg',imageBuffer);
   });
   it('Check whether the supplied data has BearishSpinningTop pattern', function() {
    var bearishSpinningTop = new BearishSpinningTop ();

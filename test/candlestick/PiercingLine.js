@@ -14,7 +14,7 @@ var input = {
 describe('PiercingLine : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/PiercingLine.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/PiercingLine.svg',imageBuffer);
   });
   it('Check whether the supplied data has PiercingLine pattern', function() {
    var piercingLine = new PiercingLine ();

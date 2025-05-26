@@ -13,7 +13,7 @@ var input = {
 describe('BullishHaramiCross: ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/BullishHaramiCross.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/BullishHaramiCross.svg',imageBuffer);
   });
   it('Check whether the supplied data has BullishHaramiCross pattern', function() {
    var bullishHaramiCross = new BullishHaramiCross ();

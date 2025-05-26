@@ -22,7 +22,7 @@ var inputDot = {
 describe('Doji : ', function() {
    before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/doji.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/doji.svg',imageBuffer);
   });
   it('Check whether the supplied data has Doji pattern', function() {
    var doji = new Doji();

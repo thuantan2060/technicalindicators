@@ -13,7 +13,7 @@ var input = {
 describe('MorningDojiStar : ', function() {
   before(function() {
     var imageBuffer = drawCandleStick(input);
-    fs.writeFileSync(__dirname+'/images/MorningDojiStar.png',imageBuffer);
+    fs.writeFileSync(__dirname+'/images/MorningDojiStar.svg',imageBuffer);
   });
   it('Check whether the supplied data has MorningDojiStar pattern', function() {
    var morningDojiStar = new MorningDojiStar ();
