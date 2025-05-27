@@ -3,10 +3,10 @@ var assert                  = require('assert');
 var { drawCandleStick } = require('../test-helper');
 var fs                      = require('fs');
 var twoDayBearishInput = {
-  open: [21.44,27.89],
-  high: [25.10,30.87],
-  close: [23.25,15.36],
-  low: [20.82,14.93],
+  open: [30.20,15.36],  // Current: bearish (30.20 -> 14.50), Previous: bullish (15.36 -> 27.89)
+  high: [30.50,30.87],
+  close: [14.50,27.89],
+  low: [14.00,14.93],
 }
 
 var oneDayBearishInput = {

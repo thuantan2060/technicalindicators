@@ -14,10 +14,21 @@ export default class BullishSpinningTop extends CandlestickFinder {
         let daysHigh  = data.high[0];
         let daysLow   = data.low[0];
 
+        // Validate OHLC data integrity first
+        if (!this.validateOHLC(daysOpen, daysHigh, daysLow, daysClose)) {
+            return false;
+        }
+
+        // Must be bullish (close > open)
+        let isBullish = daysClose > daysOpen;
+        
         let bodyLength           = Math.abs(daysClose-daysOpen);
-        let upperShadowLength    = Math.abs(daysHigh-daysClose);
-        let lowerShadowLength    = Math.abs(daysOpen-daysLow);
-        let isBullishSpinningTop = bodyLength < upperShadowLength && 
+        // For bullish candles: top of body is close, bottom is open
+        let upperShadowLength    = Math.abs(daysHigh - daysClose);
+        let lowerShadowLength    = Math.abs(daysOpen - daysLow);
+        
+        let isBullishSpinningTop = isBullish && 
+                                 bodyLength < upperShadowLength && 
                                  bodyLength < lowerShadowLength;
 
         return isBullishSpinningTop;

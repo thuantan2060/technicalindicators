@@ -4,11 +4,10 @@ var { drawCandleStick } = require('../test-helper');
 var fs                      = require('fs');
 
 var input = {
-  open: [30.10,39.45],
-  high: [37.40,41.45],
-  close: [35.36,32.50],
-  low: [28.30,31.25],
-  
+  open: [42.70, 41.33],  // Current: bearish (42.70 -> 41.60), Previous: bullish (41.33 -> 42.34)
+  high: [42.82,42.50],
+  close: [41.60,42.34],
+  low: [41.45,41.15],
 }
 
 describe('DarkCloudCover: ', function() {

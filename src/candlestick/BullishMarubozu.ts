@@ -14,14 +14,14 @@ export default class BullishMarubozu extends CandlestickFinder {
         let daysHigh  = data.high[0];
         let daysLow   = data.low[0];
 
-        let isBullishMarbozu =  this.approximateEqual(daysClose, daysHigh) && 
-                                this.approximateEqual(daysLow, daysOpen) &&
-                                daysOpen < daysClose && 
-                                daysOpen < daysHigh;
+        // Bullish Marubozu: close > open, close = high, open = low (no shadows)
+        let isBullish = daysClose > daysOpen;
+        let isCloseEqualsHigh = this.approximateEqual(daysClose, daysHigh);
+        let isOpenEqualsLow = this.approximateEqual(daysOpen, daysLow);
         
+        let isBullishMarubozu = isBullish && isCloseEqualsHigh && isOpenEqualsLow;
 
-        return (isBullishMarbozu);
-        
+        return isBullishMarubozu;
     }
 }
 

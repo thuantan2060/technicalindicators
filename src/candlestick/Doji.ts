@@ -13,10 +13,16 @@ export default class Doji extends CandlestickFinder {
         let daysClose = data.close[0];
         let daysHigh = data.high[0];
         let daysLow = data.low[0];
+        
+        // A Doji is simply when open equals close (very small or no body)
+        // The shadows can be of any length
         let isOpenEqualsClose = this.approximateEqual(daysOpen, daysClose);
-        let isHighEqualsOpen = isOpenEqualsClose && this.approximateEqual(daysOpen, daysHigh);
-        let isLowEqualsClose = isOpenEqualsClose && this.approximateEqual(daysClose, daysLow);
-        return (isOpenEqualsClose && isHighEqualsOpen == isLowEqualsClose);
+        
+        // Make sure we have valid OHLC data (high >= low, etc.)
+        let hasValidData = daysHigh >= Math.max(daysOpen, daysClose) && 
+                          daysLow <= Math.min(daysOpen, daysClose);
+        
+        return isOpenEqualsClose && hasValidData;
     }
 }
 

@@ -3,18 +3,15 @@ var assert = require('assert');
 var { drawCandleStick } = require('../test-helper');
 var fs                      = require('fs');
 
-// var input = {
-//   open: [22.20,19.80,20.70],
-//   high: [22.50,20.45,21.82],
-//   close: [20.80,20.30,21.58],
-//   low: [20.65,19.60,20.40]
-// }
-
+// Valid Morning Star pattern:
+// Day 1 (index 2): Large bearish candle
+// Day 2 (index 1): Small star with gap down  
+// Day 3 (index 0): Bullish candle with gap up, closes above day 1 midpoint
 var input = {
-  open: [22.20,20.30,20.70],
-  high: [22.50,20.45,21.82],
-  close: [20.80,19.80,21.58],
-  low: [20.65,19.60,20.40]
+  open: [21.50, 18.80, 23.00],  // [day3, day2, day1] - gaps and progression
+  high: [22.80, 19.20, 23.50],
+  close: [22.40, 18.90, 20.50],  // day1 midpoint = 21.75, day3 closes above it
+  low: [21.20, 18.60, 20.50]
 }
 
 describe('MorningStar : ', function() {

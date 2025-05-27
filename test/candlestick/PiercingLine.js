@@ -4,11 +4,10 @@ var { drawCandleStick } = require('../test-helper');
 var fs                      = require('fs');
 
 var input = {
-  open: [42.70, 41.33],
-  high: [42.82,42.50],
-  close: [41.60,42.34],
-  low: [41.45,41.15],
-  
+  open: [30.10,39.45],  // Current: bullish (30.10 -> 36.50), Previous: bearish (39.45 -> 32.50)
+  high: [37.40,41.45],  // Previous midpoint: (39.45 + 32.50) / 2 = 35.975, Current close: 36.50 > 35.975 ✓
+  close: [36.50,32.50],
+  low: [28.30,31.25],
 }
 
 describe('PiercingLine : ', function() {

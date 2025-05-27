@@ -9,25 +9,33 @@ export default class BullishHaramiCross extends CandlestickFinder {
         this.scale = scale;
     }
     logic (data:StockData) {
-        let firstdaysOpen   = data.open[0];
-        let firstdaysClose  = data.close[0];
-        let firstdaysHigh   = data.high[0];
-        let firstdaysLow    = data.low[0]
-        let seconddaysOpen  = data.open[1];
-        let seconddaysClose = data.close[1];
-        let seconddaysHigh  = data.high[1];
-        let seconddaysLow   = data.low[1]
-
-		let isBullishHaramiCrossPattern = ((firstdaysOpen > seconddaysOpen) && 
-		(firstdaysClose <= seconddaysOpen) &&
-		(firstdaysClose < seconddaysClose)&& 
-		(firstdaysOpen  > seconddaysLow)&&
-                               (firstdaysHigh  > seconddaysHigh)); 
-
-        let isSecondDayDoji  = this.approximateEqual(seconddaysOpen, seconddaysClose);          
-   
-        return (isBullishHaramiCrossPattern && isSecondDayDoji);
+        // Previous day (first in pattern - index 1)
+        let prevOpen   = data.open[1];
+        let prevClose  = data.close[1];
+        let prevHigh   = data.high[1];
+        let prevLow    = data.low[1];
         
+        // Current day (second in pattern - index 0)
+        let currOpen  = data.open[0];
+        let currClose = data.close[0];
+        let currHigh  = data.high[0];
+        let currLow   = data.low[0];
+
+        // Previous day should be a doji (open ≈ close)
+        let isPrevDoji = this.approximateEqual(prevOpen, prevClose);
+        
+        // Current day should be bearish
+        let isCurrBearish = currClose < currOpen;
+        
+        // Containment logic based on original pattern definition
+        // Current day should have some containment within previous day's range
+        let hasContainment = currOpen > prevOpen && 
+                           currClose <= prevOpen &&
+                           currClose < prevClose && 
+                           currOpen > prevLow &&
+                           currHigh > prevHigh;
+
+        return isPrevDoji && isCurrBearish && hasContainment;
    }
 }
 

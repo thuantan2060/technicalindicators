@@ -14,9 +14,25 @@ export default class BearishInvertedHammerStick extends CandlestickFinder {
         let daysHigh  = data.high[0];
         let daysLow   = data.low[0];
 
+        // Basic OHLC validation
+        if (!this.validateOHLC(daysOpen, daysHigh, daysLow, daysClose)) {
+            return false;
+        }
+
+        // Must be a bearish candle (red candle)
         let isBearishInvertedHammer = daysOpen > daysClose;
+        
+        // The close should be approximately equal to the low (small lower shadow)
         isBearishInvertedHammer = isBearishInvertedHammer && this.approximateEqual(daysClose, daysLow);
-        isBearishInvertedHammer = isBearishInvertedHammer && (daysOpen - daysClose) <= 2 * (daysHigh - daysOpen);
+        
+        // The upper shadow should be at least twice the body size
+        let bodySize = daysOpen - daysClose;
+        let upperShadow = daysHigh - daysOpen;
+        isBearishInvertedHammer = isBearishInvertedHammer && (upperShadow >= bodySize * 2);
+        
+        // Ensure there's a significant upper shadow (at least some minimum relative to scale)
+        let minShadowSize = (daysHigh - daysLow) * 0.1 * this.scale;
+        isBearishInvertedHammer = isBearishInvertedHammer && (upperShadow >= minShadowSize);
 
         return isBearishInvertedHammer;
     }

@@ -3,11 +3,15 @@ var assert = require('assert');
 var { drawCandleStick } = require('../test-helper');
 var fs                      = require('fs');
 
+// Valid Three Black Crows pattern:
+// Day 1 (index 2): First bearish candle (open=23.00, close=22.00)
+// Day 2 (index 1): Opens within Day 1 body (22.50), closes lower (21.50), lower low
+// Day 3 (index 0): Opens within Day 2 body (22.00), closes lower (20.80), lower low
 var input = {
-  open: [21.65,21.48,21.25],
-  high: [21.82,21.57,21.35],
-  close: [21.32,21.10,20.70],
-  low: [21.25,20.97,20.60]
+  open: [22.00, 22.50, 23.00],  // [day3, day2, day1] - each opens within previous body
+  high: [22.30, 22.80, 23.50],  // progressively lower highs
+  close: [20.80, 21.50, 22.00], // progressively lower closes
+  low: [20.60, 21.30, 21.80]    // progressively lower lows
 }
 
 describe('ThreeBlackCrows : ', function() {
