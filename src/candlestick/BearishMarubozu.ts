@@ -14,13 +14,28 @@ export default class BearishMarubozu extends CandlestickFinder {
         let daysHigh  = data.high[0];
         let daysLow   = data.low[0];
 
-        let isBearishMarbozu =  this.approximateEqual(daysOpen, daysHigh) && 
-                                this.approximateEqual(daysLow, daysClose) &&
-                                daysOpen > daysClose && 
-                                daysOpen > daysLow;
+        // Validate OHLC data
+        if (!this.validateOHLC(daysOpen, daysHigh, daysLow, daysClose)) {
+            return false;
+        }
 
-        return (isBearishMarbozu);
+        // Bearish Marubozu: open > close, open = high, close = low (no shadows)
+        let isBearish = daysOpen > daysClose;
         
+        // For Marubozu, we need strict equality for open=high and close=low
+        // Allow small tolerance for rounding errors but reject significant shadows
+        let bodySize = Math.abs(daysOpen - daysClose);
+        let maxTolerance = Math.max(bodySize * 0.015, 0.015 * this.scale); // Slightly more generous for floating point precision
+        
+        let upperShadow = Math.abs(daysHigh - daysOpen);
+        let lowerShadow = Math.abs(daysLow - daysClose);
+        
+        let isOpenEqualsHigh = upperShadow <= maxTolerance;
+        let isCloseEqualsLow = lowerShadow <= maxTolerance;
+        
+        let isBearishMarubozu = isBearish && isOpenEqualsHigh && isCloseEqualsLow;
+
+        return isBearishMarubozu;
     }
 }
 

@@ -9,25 +9,36 @@ export default class PiercingLine extends CandlestickFinder {
         this.scale = scale;
     }
     logic (data:StockData) {
-        let firstdaysOpen   = data.open[0];
-        let firstdaysClose  = data.close[0];
-        let firstdaysHigh   = data.high[0];
-        let firstdaysLow    = data.low[0]
-        let seconddaysOpen  = data.open[1];
-        let seconddaysClose = data.close[1];
-        let seconddaysHigh  = data.high[1];
-        let seconddaysLow   = data.low[1]
-
-        let firstdaysMidpoint = ((firstdaysOpen+firstdaysClose)/2);
-        let isDowntrend       = seconddaysLow < firstdaysLow;
-        let isFirstBearish    = firstdaysClose < firstdaysOpen;
-        let isSecondBullish   = seconddaysClose > seconddaysOpen;
-
-        let isPiercingLinePattern = ((firstdaysLow > seconddaysOpen) && 
-                                    (seconddaysClose > firstdaysMidpoint));
+        // Previous day (older) - index 0
+        let prevOpen   = data.open[0];
+        let prevClose  = data.close[0];
+        let prevHigh   = data.high[0];
+        let prevLow    = data.low[0];
         
-       return (isDowntrend && isFirstBearish && isPiercingLinePattern && isSecondBullish);
+        // Current day (most recent) - index 1
+        let currOpen   = data.open[1];
+        let currClose  = data.close[1];
+        let currHigh   = data.high[1];
+        let currLow    = data.low[1];
+
+        // Previous day should be bearish (red candle)
+        let prevIsBearish = prevClose < prevOpen;
         
+        // Current day should be bullish (green candle)  
+        let currIsBullish = currClose > currOpen;
+        
+        // Calculate the midpoint of previous day's body
+        let prevMidpoint = (prevOpen + prevClose) / 2;
+        
+        // Piercing line conditions:
+        // 1. Current opens below previous day's low (gap down)
+        // 2. Current close is above the midpoint of previous day's body
+        let isPiercingLine = currOpen < prevLow && currClose > prevMidpoint;
+        
+        // Additional check: ensure current close is still below previous open (not full engulfment)
+        let isPartialPenetration = currClose < prevOpen;
+        
+       return prevIsBearish && currIsBullish && isPiercingLine && isPartialPenetration;
    }
 }
 

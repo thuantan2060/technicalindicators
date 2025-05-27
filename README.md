@@ -185,6 +185,89 @@ If you like this project. You'll love my other project [crypto trading hub](http
 
 # CandleStick Pattern
 
+## Scale Parameter Configuration
+
+All candlestick patterns support a `scale` parameter that adjusts the sensitivity of pattern detection. The scale affects the tolerance used in the `approximateEqual` function for comparing price values.
+
+### Default Scale (scale = 1)
+The patterns are designed to work optimally with **daily candles**. The default scale of `1` works well for daily timeframes because it provides the right balance of sensitivity for pattern detection.
+
+**Important**: The tolerance automatically scales with price levels, so you don't need to adjust scale based on instrument price (XAUUSD vs BTCUSD vs stocks).
+
+### When to Adjust Scale
+
+The scale should be adjusted based on **timeframe and volatility**, not price level:
+
+**For Lower Timeframes (Higher Volatility):**
+- **1-minute candles**: Use `scale = 0.3-0.5` (decrease scale)
+- **5-minute candles**: Use `scale = 0.5-0.7` (decrease scale)  
+- **15-minute candles**: Use `scale = 0.7-0.8` (decrease scale)
+- **1-hour candles**: Use `scale = 0.8-0.9` (decrease scale)
+
+**For Higher Timeframes (Lower Volatility):**
+- **Daily candles**: Use `scale = 1` (default)
+- **Weekly candles**: Use `scale = 1.2-1.5` (increase scale)
+- **Monthly candles**: Use `scale = 1.5-2.0` (increase scale)
+
+**Reasoning**: Lower timeframe candles have smaller price oscillations and require more sensitive pattern detection (lower scale). Higher timeframe candles have larger price movements and need less sensitive detection (higher scale).
+
+### Usage Examples
+
+``` javascript
+// Daily candles (default) - works for any price level
+const doji = require('@thuantan2060/technicalindicators').doji;
+
+// XAUUSD daily candles (price ~$2500)
+doji({
+  open: [2500.00],
+  high: [2505.00],
+  close: [2502.00],
+  low: [2498.00]
+}); // Uses scale = 1 (default)
+
+// BTCUSD daily candles (price ~$50000) 
+doji({
+  open: [50000],
+  high: [50200],
+  close: [50100],
+  low: [49800]
+}); // Uses scale = 1 (default) - price level doesn't matter
+
+// 5-minute candles on EURUSD (lower timeframe = decrease scale)
+const bearish = require('@thuantan2060/technicalindicators').bearish;
+bearish({
+  open: [1.1000, 1.1010],
+  high: [1.1015, 1.1020],
+  close: [1.0995, 1.0990],
+  low: [1.0990, 1.0985]
+}, 0.6); // scale = 0.6 (decreased for 5-minute candles)
+
+// Weekly candles on any instrument (higher timeframe = increase scale)
+const BullishHammer = require('@thuantan2060/technicalindicators').BullishHammer;
+new BullishHammer(1.3).hasPattern({
+  open: [100],
+  high: [105],
+  close: [103],
+  low: [98]
+}); // scale = 1.3 (increased for weekly candles)
+```
+
+### How Scale Works
+
+The scale parameter affects the tolerance calculation in pattern detection:
+- **Minimum threshold**: `0.001 * scale`
+- **Relative threshold**: `Math.abs(price) * 0.001 * scale`
+- **Final tolerance**: `Math.max(minThreshold, relativeThreshold)`
+
+The tolerance **automatically scales with price level** through the relative threshold. For example:
+- At $100 with scale=1: tolerance = max(0.001, 100 * 0.001 * 1) = 0.1
+- At $2500 with scale=1: tolerance = max(0.001, 2500 * 0.001 * 1) = 2.5  
+- At $50000 with scale=1: tolerance = max(0.001, 50000 * 0.001 * 1) = 50
+
+This means higher-priced instruments automatically get higher tolerance, so you only need to adjust scale for different timeframes.
+
+## Available Patterns
+
 1. [Abandoned Baby](https://runkit.com/anandaravindan/abandoned-baby).
 1. [Bearish Engulfing Pattern](https://runkit.com/aarthiaradhana/bearishengulfingpattern).
 1. [Bullish Engulfiing Pattern](https://runkit.com/aarthiaradhana/bullishengulfingpattern).

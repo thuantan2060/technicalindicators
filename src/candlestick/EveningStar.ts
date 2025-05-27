@@ -9,31 +9,43 @@ export default class EveningStar extends CandlestickFinder {
         this.scale = scale;
     }
     logic (data:StockData) {
-        let firstdaysOpen   = data.open[0];
-        let firstdaysClose  = data.close[0];
-        let firstdaysHigh   = data.high[0];
-        let firstdaysLow    = data.low[0]
-        let seconddaysOpen  = data.open[1];
-        let seconddaysClose = data.close[1];
-        let seconddaysHigh  = data.high[1];
-        let seconddaysLow   = data.low[1]
-        let thirddaysOpen   = data.open[2];
-        let thirddaysClose  = data.close[2];
-        let thirddaysHigh   = data.high[2];
-        let thirddaysLow    = data.low[2];
+        // First day (oldest) - index 0
+        let firstOpen   = data.open[0];
+        let firstClose  = data.close[0];
+        let firstHigh   = data.high[0];
+        let firstLow    = data.low[0];
+        
+        // Second day (middle) - index 1 
+        let secondOpen  = data.open[1];
+        let secondClose = data.close[1];
+        let secondHigh  = data.high[1];
+        let secondLow   = data.low[1];
+        
+        // Third day (most recent) - index 2
+        let thirdOpen   = data.open[2];
+        let thirdClose  = data.close[2];
+        let thirdHigh   = data.high[2];
+        let thirdLow    = data.low[2];
          
-        let firstdaysMidpoint = ((firstdaysOpen+firstdaysClose)/2);
-        let isFirstBullish    = firstdaysClose > firstdaysOpen;
-        let isSmallBodyExists = ((firstdaysHigh < seconddaysLow)&&
-                                (firstdaysHigh < seconddaysHigh));
-        let isThirdBearish    = thirddaysOpen > thirddaysClose; 
-
-        let gapExists         = ((seconddaysHigh > firstdaysHigh) && 
-                                (seconddaysLow > firstdaysHigh) && 
-                                (thirddaysOpen < seconddaysLow) && 
-                                (seconddaysClose > thirddaysOpen));
-      let doesCloseBelowFirstMidpoint = thirddaysClose < firstdaysMidpoint;
-      return (isFirstBullish && isSmallBodyExists && gapExists && isThirdBearish && doesCloseBelowFirstMidpoint );
+        // First day should be bullish (green candle)
+        let isFirstBullish = firstClose > firstOpen;
+        
+        // Second day should be a small body (star) gapping up from first day
+        let firstMidpoint = (firstOpen + firstClose) / 2;
+        let secondBodySize = Math.abs(secondClose - secondOpen);
+        let firstBodySize = Math.abs(firstClose - firstOpen);
+        let isSmallBody = secondBodySize < (firstBodySize * 0.3); // Small relative to first day
+        
+        // Third day should be bearish and close below first day's midpoint
+        let isThirdBearish = thirdClose < thirdOpen;
+        let closesBelowFirstMidpoint = thirdClose < firstMidpoint;
+        
+        // Gap conditions: second day gaps up from first, third gaps down from second
+        let hasUpGap = secondLow > firstHigh;
+        let hasDownGap = thirdOpen < secondLow;
+        
+        return (isFirstBullish && isSmallBody && isThirdBearish && 
+                closesBelowFirstMidpoint && hasUpGap && hasDownGap);
      }
 }
 

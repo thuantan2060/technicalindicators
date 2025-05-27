@@ -9,21 +9,40 @@ export default class BearishEngulfingPattern extends CandlestickFinder {
         this.scale = scale;
     }
     logic (data:StockData) {
-        let firstdaysOpen   = data.open[0];
-        let firstdaysClose  = data.close[0];
-        let firstdaysHigh   = data.high[0];
-        let firstdaysLow    = data.low[0]
-        let seconddaysOpen  = data.open[1];
-        let seconddaysClose = data.close[1];
-        let seconddaysHigh  = data.high[1];
-        let seconddaysLow   = data.low[1]
+        // Previous day (older) - index 0
+        let prevOpen   = data.open[0];
+        let prevClose  = data.close[0];
+        let prevHigh   = data.high[0];
+        let prevLow    = data.low[0];
         
-        let isBearishEngulfing     = ((firstdaysClose > firstdaysOpen) && 
-                                        (firstdaysOpen < seconddaysOpen) &&
-                                        (firstdaysClose <= seconddaysOpen) &&
-                                        (firstdaysOpen > seconddaysClose));
+        // Current day (most recent) - index 1
+        let currOpen  = data.open[1];
+        let currClose = data.close[1];
+        let currHigh  = data.high[1];
+        let currLow   = data.low[1];
+        
+        // Validate OHLC data integrity
+        let prevValid = this.validateOHLC(prevOpen, prevHigh, prevLow, prevClose);
+        let currValid = this.validateOHLC(currOpen, currHigh, currLow, currClose);
+        
+        if (!prevValid || !currValid) {
+            return false;
+        }
+        
+        // Previous day should be bullish (green)
+        let prevIsBullish = prevClose > prevOpen;
+        
+        // Current day should be bearish (red)
+        let currIsBearish = currClose < currOpen;
+        
+        // Current day should engulf previous day:
+        // - Current open above previous close (gap up or continuation)
+        // - Current close below previous open (complete engulfment)
+        let isEngulfing = currOpen >= prevClose && currClose <= prevOpen;
+        
+        let isBearishEngulfing = prevIsBullish && currIsBearish && isEngulfing;
                     
-        return (isBearishEngulfing);
+        return isBearishEngulfing;
    }
 }
 

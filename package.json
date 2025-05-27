@@ -18,9 +18,10 @@
   ],
   "scripts": {
     "cover": "nyc --include-all-sources --include=\"dist/**/*.js\" --exclude=\"dist/**/*.spec.js\" mocha --require @babel/register --require core-js/stable --require regenerator-runtime/runtime && open coverage/lcov-report/index.html",
-    "test": "mocha --require @babel/register --require core-js/stable --require regenerator-runtime/runtime --recursive test/",
-    "test:watch": "mocha --watch --require @babel/register --require core-js/stable --require regenerator-runtime/runtime --recursive test/",
-    "test:charts": "node test/run-unit-tests.js",
+    "test": "mocha --require @babel/register --require core-js/stable --require regenerator-runtime/runtime --recursive test/ --exclude test/helpers/**",
+    "test:specific": "mocha --require @babel/register --require core-js/stable --require regenerator-runtime/runtime --exclude test/helpers/**",
+    "test:watch": "mocha --watch --require @babel/register --require core-js/stable --require regenerator-runtime/runtime --exclude test/helpers/**",
+    "test:charts": "node test/helpers/run-unit-tests.js",
     "lint": "eslint src/**/*.ts --fix",
     "generateDts": "node generateTsDefinitions.js",
     "build": "npm run clean && npm run build:babel && npm run build:rollup && npm run generateDts",

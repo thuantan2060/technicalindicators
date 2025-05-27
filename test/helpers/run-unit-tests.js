@@ -10,13 +10,13 @@ const execAsync = promisify(exec);
 
 // Configuration
 const CONFIG = {
-  IMAGES_DIR: path.join(__dirname, 'candlestick', 'images'),
+  IMAGES_DIR: path.resolve(__dirname, '..', 'candlestick', 'images'),
   TEST_TIMEOUT: 30000,
   MAX_BUFFER: 1024 * 1024 * 10, // 10MB
   DISPLAY_EXAMPLES: 5,
   CONVERSION_TIMEOUT: 60000, // 60 seconds for conversion
-  CONVERTER_SCRIPT: path.join(__dirname, 'convert-svg-to-png.js'),
-  WASM_PATH: path.join(__dirname, '../node_modules/svg2png-wasm/svg2png_wasm_bg.wasm')
+  CONVERTER_SCRIPT: path.resolve(__dirname, 'convert-svg-to-png.js'),
+  WASM_PATH: path.resolve(__dirname, '../../node_modules/svg2png-wasm/svg2png_wasm_bg.wasm')
 };
 
 // Track conversion state using global to persist across requires
@@ -333,7 +333,7 @@ async function runUnitTests() {
     
     const startTime = Date.now();
     const result = await execAsync('npm test', {
-      cwd: __dirname,
+      cwd: path.resolve(__dirname, '..', '..'),
       maxBuffer: CONFIG.MAX_BUFFER
     });
     

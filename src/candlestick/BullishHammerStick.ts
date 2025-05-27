@@ -14,9 +14,39 @@ export default class BullishHammerStick extends CandlestickFinder {
         let daysHigh  = data.high[0];
         let daysLow   = data.low[0];
 
-        let isBullishHammer = daysClose > daysOpen;
+        // Basic OHLC validation
+        if (!this.validateOHLC(daysOpen, daysHigh, daysLow, daysClose)) {
+            return false;
+        }
+
+        // Must be a bullish candle (green candle) or doji-like
+        let isBullishHammer = daysClose >= daysOpen;
+        
+        // The close should be approximately equal to the high (small upper shadow)
         isBullishHammer = isBullishHammer && this.approximateEqual(daysClose, daysHigh);
-        isBullishHammer = isBullishHammer && 2 * (daysClose - daysOpen) <= (daysOpen - daysLow);
+        
+        // Calculate sizes
+        let bodySize = Math.abs(daysClose - daysOpen);
+        let lowerShadow = Math.min(daysOpen, daysClose) - daysLow;
+        let totalRange = daysHigh - daysLow;
+        
+        // Ensure we have a meaningful range to work with
+        if (totalRange <= 0) {
+            return false;
+        }
+        
+        // Handle very small bodies (doji-like hammers)
+        let minBodyForComparison = Math.max(bodySize, totalRange * 0.01 / this.scale);
+        
+        // The lower shadow should be at least twice the effective body size
+        isBullishHammer = isBullishHammer && (lowerShadow >= 2 * minBodyForComparison);
+        
+        // Ensure there's a significant lower shadow relative to the total range and scale
+        let minShadowSize = Math.max(
+            totalRange * 0.3 / this.scale,  // At least 30% of total range divided by scale
+            minBodyForComparison * 2  // At least twice the effective body size
+        );
+        isBullishHammer = isBullishHammer && (lowerShadow >= minShadowSize);
 
         return isBullishHammer;
     }
