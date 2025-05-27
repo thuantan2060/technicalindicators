@@ -1,6 +1,6 @@
 var BullishMarubozu = require('../../lib/candlestick/BullishMarubozu').default;
 var assert = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs = require('fs');
 
 describe('BullishMarubozu: ', function() {

@@ -9,33 +9,51 @@ export default class BullishHaramiCross extends CandlestickFinder {
         this.scale = scale;
     }
     logic (data:StockData) {
-        // Previous day (first in pattern - index 1)
-        let prevOpen   = data.open[1];
-        let prevClose  = data.close[1];
-        let prevHigh   = data.high[1];
-        let prevLow    = data.low[1];
+        // Previous day (older) - index 0 - should be a long bearish candle
+        let prevOpen   = data.open[0];
+        let prevClose  = data.close[0];
+        let prevHigh   = data.high[0];
+        let prevLow    = data.low[0];
         
-        // Current day (second in pattern - index 0)
-        let currOpen  = data.open[0];
-        let currClose = data.close[0];
-        let currHigh  = data.high[0];
-        let currLow   = data.low[0];
+        // Current day (most recent) - index 1 - should be a doji
+        let currOpen  = data.open[1];
+        let currClose = data.close[1];
+        let currHigh  = data.high[1];
+        let currLow   = data.low[1];
 
-        // Previous day should be a doji (open ≈ close)
-        let isPrevDoji = this.approximateEqual(prevOpen, prevClose);
-        
-        // Current day should be bearish
-        let isCurrBearish = currClose < currOpen;
-        
-        // Containment logic based on original pattern definition
-        // Current day should have some containment within previous day's range
-        let hasContainment = currOpen > prevOpen && 
-                           currClose <= prevOpen &&
-                           currClose < prevClose && 
-                           currOpen > prevLow &&
-                           currHigh > prevHigh;
+        // Validate OHLC data
+        if (!this.validateOHLC(prevOpen, prevHigh, prevLow, prevClose) ||
+            !this.validateOHLC(currOpen, currHigh, currLow, currClose)) {
+            return false;
+        }
 
-        return isPrevDoji && isCurrBearish && hasContainment;
+        // Previous day should be a bearish candle
+        let isPrevBearish = prevClose < prevOpen;
+        let prevBodySize = Math.abs(prevOpen - prevClose);
+        let prevRange = prevHigh - prevLow;
+        
+        // Ensure the previous candle has a reasonable body size
+        // The body should be at least 50% of the total range (more strict requirement)
+        let isPrevSignificant = prevRange > 0 && (prevBodySize / prevRange) >= 0.5;
+        
+        // Current day should be a doji (open ≈ close)
+        let isCurrDoji = this.approximateEqual(currOpen, currClose);
+        
+        // Containment: Current doji should be completely contained within previous candle's body
+        // For a bearish previous candle: prevClose < prevOpen
+        // So the body range is from prevClose (bottom) to prevOpen (top)
+        let bodyTop = prevOpen;    // For bearish candle, open is higher
+        let bodyBottom = prevClose; // For bearish candle, close is lower
+        
+        // Current candle (including shadows) should be contained within previous body
+        let hasContainment = currHigh <= bodyTop && 
+                           currLow >= bodyBottom &&
+                           currOpen >= bodyBottom && 
+                           currOpen <= bodyTop &&
+                           currClose >= bodyBottom && 
+                           currClose <= bodyTop;
+
+        return isPrevBearish && isPrevSignificant && isCurrDoji && hasContainment;
    }
 }
 

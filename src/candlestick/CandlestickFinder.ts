@@ -51,7 +51,6 @@ export default class CandlestickFinder {
     
     getAllPatternIndex (data:StockData) {
         if(!data || !data.close || data.close.length < this.requiredCount) {
-            console.warn('Data count less than data required for the strategy ', this.name);
             return [];
         }
         
@@ -59,7 +58,6 @@ export default class CandlestickFinder {
         if (data.open.length !== data.close.length || 
             data.high.length !== data.close.length || 
             data.low.length !== data.close.length) {
-            console.warn('OHLC data arrays have different lengths for strategy ', this.name);
             return [];
         }
         
@@ -80,7 +78,6 @@ export default class CandlestickFinder {
 
     hasPattern (data:StockData) {
         if(!data || !data.close || data.close.length < this.requiredCount) {
-            console.warn('Data count less than data required for the strategy ', this.name);
             return false;
         }
         
@@ -88,7 +85,6 @@ export default class CandlestickFinder {
         if (data.open.length !== data.close.length || 
             data.high.length !== data.close.length || 
             data.low.length !== data.close.length) {
-            console.warn('OHLC data arrays have different lengths for strategy ', this.name);
             return false;
         }
         

@@ -1,43 +1,43 @@
 var BearishEngulfingPattern = require('../../lib/candlestick/BearishEngulfingPattern').default;
 var assert = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs = require('fs');
 
 // Valid Bearish Engulfing Pattern
 var validBearishEngulfing = {
-  open: [30.20,15.36],  // Current: bearish (30.20 -> 14.50), Previous: bullish (15.36 -> 27.89)
-  high: [30.50,30.87],
-  close: [14.50,27.89],
-  low: [14.00,14.93],
+  open: [15.36,30.20],  // Previous: bullish (15.36 -> 27.89), Current: bearish (30.20 -> 14.50)
+  high: [30.87,30.50],
+  close: [27.89,14.50],
+  low: [14.93,14.00],
 }
 
 // Valid Bearish Engulfing - Perfect engulfment
 var perfectEngulfment = {
-  open: [27.89, 20.00],  // Current opens at previous close, Previous bullish
-  high: [28.00, 26.00],
-  close: [20.00, 25.00], // Current closes at previous open
+  open: [20.00, 27.89],  // Previous bullish, Current opens at previous close
+  high: [26.00, 28.00],
+  close: [25.00, 20.00], // Previous open, Current closes at previous open
   low: [19.50, 19.50],
 }
 
 // Valid Bearish Engulfing - Minimal engulfment
 var minimalEngulfment = {
-  open: [25.01, 20.00],  // Current opens just above previous close
-  high: [25.10, 26.00],
-  close: [19.99, 25.00], // Current closes just below previous open
+  open: [20.00, 25.01],  // Previous bullish, Current opens just above previous close
+  high: [26.00, 25.10],
+  close: [25.00, 19.99], // Previous close, Current closes just below previous open
   low: [19.50, 19.50],
 }
 
 // Invalid - Both candles bearish
 var bothBearish = {
-  open: [25.00, 22.00],  // Both candles bearish
-  high: [26.00, 23.00],
-  close: [20.00, 21.00],
-  low: [19.50, 20.50],
+  open: [22.00, 25.00],  // Both candles bearish
+  high: [23.00, 26.00],
+  close: [21.00, 20.00],
+  low: [20.50, 19.50],
 }
 
 // Invalid - Current candle bullish
 var currentBullish = {
-  open: [20.00, 20.00],  // Current bullish, previous bullish
+  open: [20.00, 20.00],  // Previous bullish, current bullish
   high: [25.00, 25.00],
   close: [24.00, 24.00],
   low: [19.50, 19.50],
@@ -45,7 +45,7 @@ var currentBullish = {
 
 // Invalid - Previous candle bearish
 var previousBearish = {
-  open: [25.00, 25.00],  // Current bearish, previous bearish
+  open: [25.00, 25.00],  // Previous bearish, current bearish
   high: [26.00, 26.00],
   close: [20.00, 20.00],
   low: [19.50, 19.50],
@@ -53,34 +53,34 @@ var previousBearish = {
 
 // Invalid - No engulfment (current doesn't cover previous)
 var noEngulfment = {
-  open: [23.00, 20.00],  // Current doesn't engulf previous
-  high: [24.00, 25.00],
-  close: [22.00, 24.00],
-  low: [21.50, 19.50],
+  open: [20.00, 23.00],  // Previous bullish, current doesn't engulf previous
+  high: [25.00, 24.00],
+  close: [24.00, 22.00],
+  low: [19.50, 21.50],
 }
 
 // Invalid - Reverse engulfment (previous covers current)
 var reverseEngulfment = {
-  open: [21.00, 18.00],  // Previous engulfs current
-  high: [22.00, 30.00],
-  close: [20.50, 15.00],
-  low: [20.00, 14.00],
+  open: [18.00, 21.00],  // Previous bullish, current smaller bearish (reverse engulfment)
+  high: [30.00, 22.00],
+  close: [15.00, 20.50],
+  low: [14.00, 20.00],
 }
 
 // Edge case - Gap down opening
 var gapDownOpening = {
-  open: [26.00, 20.00],  // Current opens above previous close, previous day bullish
-  high: [27.00, 25.00],
-  close: [18.00, 24.00], // Previous bullish (20->24), Current bearish (26->18) and engulfs
-  low: [17.50, 19.50],
+  open: [20.00, 26.00],  // Previous bullish (20->24), Current opens above previous close
+  high: [25.00, 27.00],
+  close: [24.00, 18.00], // Previous bullish, Current bearish (26->18) and engulfs
+  low: [19.50, 17.50],
 }
 
 // Edge case - Large price range
 var largePriceRange = {
-  open: [105.00, 90.00],   
-  high: [106.00, 100.00],   
-  close: [85.00, 99.00],  
-  low: [84.50, 89.50],    
+  open: [90.00, 105.00],   // Previous bullish (90->99), Current bearish (105->85)
+  high: [100.00, 106.00],   
+  close: [99.00, 85.00],  
+  low: [89.50, 84.50],    
 }
 
 // One day data (insufficient)
@@ -93,10 +93,10 @@ var oneDayData = {
 
 // Invalid OHLC data
 var invalidOHLC = {
-  open: [30.20, 15.36],   
-  high: [29.50, 30.87],   // Invalid: high < open
-  close: [14.50, 27.89],  
-  low: [35.00, 14.93],    // Invalid: low > open
+  open: [15.36, 30.20],   
+  high: [30.87, 29.50],   // Invalid: high < open for current candle
+  close: [27.89, 14.50],  
+  low: [14.93, 35.00],    // Invalid: low > open for current candle
 }
 
 describe('BearishEngulfingPattern : ', function() {
@@ -203,10 +203,10 @@ describe('BearishEngulfingPattern : ', function() {
   // Test getAllPatternIndex method
   it('Should return correct indices for all patterns in multi-day data', function() {
    var multiDayData = {
-     open: [30.20, 15.36, 25.00, 22.00],  // Pattern at positions 0-1 (current-previous)
-     high: [30.50, 30.87, 26.00, 23.00],
-     close: [14.50, 27.89, 20.00, 21.50], // Pattern: bearish engulfs bullish
-     low: [14.00, 14.93, 19.50, 21.00],
+     open: [15.36, 30.20, 22.00, 25.00],  // Pattern at positions 0-1 (previous-current)
+     high: [30.87, 30.50, 23.00, 26.00],
+     close: [27.89, 14.50, 21.50, 20.00], // Pattern: bullish engulfed by bearish
+     low: [14.93, 14.00, 21.00, 19.50],
    };
    var bearishEngulfingPattern = new BearishEngulfingPattern();
    var indices = bearishEngulfingPattern.getAllPatternIndex(multiDayData);

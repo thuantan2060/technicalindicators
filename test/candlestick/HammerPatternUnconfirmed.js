@@ -1,6 +1,6 @@
 var HammerPatternUnconfirmed   = require('../../lib/candlestick/HammerPatternUnconfirmed').default;
 var assert          = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs              = require('fs');
 
 // Valid Hammer Pattern (Unconfirmed) test cases

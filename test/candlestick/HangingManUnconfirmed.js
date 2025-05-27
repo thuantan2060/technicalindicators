@@ -1,6 +1,6 @@
 var HangingMan      = require('../../lib/candlestick/HangingManUnconfirmed').default;
 var assert          = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs              = require('fs');
 
 // Valid Hanging Man (Unconfirmed) test cases

@@ -37,3 +37,6 @@ node_modules
 lib
 dist
 declarations
+
+# Test image svg
+test/candlestick/images/*.svg

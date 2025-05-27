@@ -1,6 +1,6 @@
 var BullishEngulfingPattern = require('../../lib/candlestick/BullishEngulfingPattern').default;
 var assert = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs = require('fs');
 
 // Valid Bullish Engulfing Pattern

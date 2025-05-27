@@ -6,8 +6,8 @@ const path = require('path');
 
 // Configuration
 const CONFIG = {
-  IMAGES_DIR: path.join(__dirname, 'candlestick/images'),
-  WASM_PATH: path.join(__dirname, '../node_modules/svg2png-wasm/svg2png_wasm_bg.wasm'),
+  IMAGES_DIR: path.join(__dirname, '..', 'candlestick', 'images'),
+  WASM_PATH: path.join(__dirname, '../../node_modules/svg2png-wasm/svg2png_wasm_bg.wasm'),
   OUTPUT_SCALE: 2,
   OUTPUT_WIDTH: 800 * 2,
   OUTPUT_HEIGHT: 400 * 2

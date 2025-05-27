@@ -9,23 +9,23 @@ export default class MorningStar extends CandlestickFinder {
         this.scale = scale;
     }
     logic (data:StockData) {
-        // First day (oldest - index 2)
-        let firstOpen   = data.open[2];
-        let firstClose  = data.close[2];
-        let firstHigh   = data.high[2];
-        let firstLow    = data.low[2];
+        // First day (oldest) - index 0
+        let firstOpen   = data.open[0];
+        let firstClose  = data.close[0];
+        let firstHigh   = data.high[0];
+        let firstLow    = data.low[0];
         
-        // Second day (middle - index 1) 
+        // Second day (middle) - index 1 
         let secondOpen  = data.open[1];
         let secondClose = data.close[1];
         let secondHigh  = data.high[1];
         let secondLow   = data.low[1];
         
-        // Third day (most recent - index 0)
-        let thirdOpen   = data.open[0];
-        let thirdClose  = data.close[0];
-        let thirdHigh   = data.high[0];
-        let thirdLow    = data.low[0];
+        // Third day (most recent) - index 2
+        let thirdOpen   = data.open[2];
+        let thirdClose  = data.close[2];
+        let thirdHigh   = data.high[2];
+        let thirdLow    = data.low[2];
          
         // First day should be bearish (red candle)
         let isFirstBearish = firstClose < firstOpen;

@@ -1,32 +1,32 @@
 var BearishHarami = require('../../lib/candlestick/BearishHarami').default;
 var assert = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs = require('fs');
 
 // Valid Bearish Harami pattern:
-// Previous day (index 1): Large bullish candle  
-// Current day (index 0): Small bearish candle completely contained within previous day
+// Previous day (index 0): Large bullish candle  
+// Current day (index 1): Small bearish candle completely contained within previous day
 var validBearishHarami = {
-  open: [22.50, 20.00],   // [current, previous] - current opens below previous close
-  high: [22.80, 24.50],   // current high < previous high
-  close: [22.20, 24.00],  // current close < current open AND within previous body
-  low: [22.00, 20.00],    // current low > previous low
+  open: [20.00, 22.50],   // [previous, current] - current opens below previous close
+  high: [24.50, 22.80],   // current high < previous high
+  close: [24.00, 22.20],  // current close < current open AND within previous body
+  low: [20.00, 22.00],    // current low > previous low
 }
 
 // Valid Bearish Harami - Perfect containment
 var perfectContainment = {
-  open: [23.50, 20.00],   // Current perfectly within previous body
-  high: [23.60, 25.00],   
-  close: [23.00, 24.50],  
-  low: [22.90, 19.50],    
+  open: [20.00, 23.50],   // Previous bullish, current perfectly within previous body
+  high: [25.00, 23.60],   
+  close: [24.50, 23.00],  
+  low: [19.50, 22.90],    
 }
 
 // Valid Bearish Harami - Minimal containment
 var minimalContainment = {
-  open: [24.49, 20.00],   // Current just within previous body
-  high: [24.51, 25.00],   
-  close: [20.01, 24.50],  
-  low: [20.00, 19.50],    
+  open: [20.00, 24.49],   // Previous bullish, current just within previous body
+  high: [25.00, 24.51],   
+  close: [24.50, 20.01],  
+  low: [19.50, 20.00],    
 }
 
 // Invalid - Both candles bearish
@@ -79,10 +79,10 @@ var currentTooLarge = {
 
 // Edge case - Very small current candle (near doji)
 var nearDoji = {
-  open: [22.51, 20.00],   // Very small body
-  high: [22.80, 24.50],   
-  close: [22.50, 24.00],  
-  low: [22.30, 19.50],    
+  open: [20.00, 22.51],   // Previous bullish, current very small body
+  high: [24.50, 22.80],   
+  close: [24.00, 22.50],  
+  low: [19.50, 22.30],    
 }
 
 // One day data (insufficient)

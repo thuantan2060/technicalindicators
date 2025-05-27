@@ -1,6 +1,6 @@
 var ShootingStar = require('../../lib/candlestick/ShootingStar').default;
 var assert = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs = require('fs');
 
 // Valid Shooting Star pattern (5-day pattern)

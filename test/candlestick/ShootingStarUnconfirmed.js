@@ -1,6 +1,6 @@
 var ShootingStar    = require('../../lib/candlestick/ShootingStarUnconfirmed').default;
 var assert          = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs              = require('fs');
 
 // Valid Shooting Star (Unconfirmed) test cases

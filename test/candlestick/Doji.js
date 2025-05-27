@@ -1,6 +1,6 @@
 var Doji = require('../../lib/candlestick/Doji').default;
 var assert = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs = require('fs');
 
 // Valid Doji - original test case

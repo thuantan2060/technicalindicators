@@ -6,7 +6,6 @@ const CONFIG = {
   CANDLE_WIDTH_RATIO: 0.8,
   PRICE_PADDING_RATIO: 0.1,
   DEFAULT_MARGIN: { top: 40, right: 40, bottom: 40, left: 40 },
-  DEFAULT_OUTPUT_DIR: 'test/candlestick/images',
   COLORS: {
     BULLISH: '#4CAF50',
     BEARISH: '#F44336'

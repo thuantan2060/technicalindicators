@@ -9,17 +9,17 @@ export default class BearishEngulfingPattern extends CandlestickFinder {
         this.scale = scale;
     }
     logic (data:StockData) {
-        // Previous day (first in pattern)
-        let prevOpen   = data.open[1];
-        let prevClose  = data.close[1];
-        let prevHigh   = data.high[1];
-        let prevLow    = data.low[1];
+        // Previous day (older) - index 0
+        let prevOpen   = data.open[0];
+        let prevClose  = data.close[0];
+        let prevHigh   = data.high[0];
+        let prevLow    = data.low[0];
         
-        // Current day (second in pattern)
-        let currOpen  = data.open[0];
-        let currClose = data.close[0];
-        let currHigh  = data.high[0];
-        let currLow   = data.low[0];
+        // Current day (most recent) - index 1
+        let currOpen  = data.open[1];
+        let currClose = data.close[1];
+        let currHigh  = data.high[1];
+        let currLow   = data.low[1];
         
         // Validate OHLC data integrity
         let prevValid = this.validateOHLC(prevOpen, prevHigh, prevLow, prevClose);

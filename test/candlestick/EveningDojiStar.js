@@ -1,6 +1,6 @@
 var EveningDojiStar = require('../../lib/candlestick/EveningDojiStar').default;
 var assert = require('assert');
-var { drawCandleStick } = require('../test-helper');
+var { drawCandleStick } = require('../helpers/test-helper');
 var fs = require('fs');
 
 describe('EveningDojiStar: ', function() {
