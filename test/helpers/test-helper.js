@@ -175,8 +175,6 @@ function generateSvgContent(data, options) {
  * Main candlestick chart generator function
  */
 function drawCandleStick(data, options = {}) {
-  console.log('📊 Generating candlestick chart...');
-  
   try {
     // Parse and validate data
     const processedData = parseOhlcData(data);
@@ -191,15 +189,6 @@ function drawCandleStick(data, options = {}) {
     // Generate SVG content
     const svgContent = generateSvgContent(processedData, chartOptions);
     const svgBuffer = Buffer.from(svgContent, 'utf8');
-    
-    // Calculate price range for logging
-    const allValues = processedData.flatMap(d => [d.open, d.high, d.low, d.close]);
-    const minPrice = Math.min(...allValues);
-    const maxPrice = Math.max(...allValues);
-    
-    console.log(`   ✅ Generated ${processedData.length} candlesticks`);
-    console.log(`   📊 Content: ${svgBuffer.length} bytes`);
-    console.log(`   📈 Range: ${minPrice.toFixed(2)} - ${maxPrice.toFixed(2)}`);
     
     return svgBuffer;
     
