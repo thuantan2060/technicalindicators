@@ -1,13 +1,28 @@
 import StockData from '../StockData';
-import ShootingStar from './ShootingStar';
+import ShootingStar, { IShootingStarConfig, DEFAULT_SHOOTING_STAR_CONFIG } from './ShootingStar';
 import { averageloss } from '../Utils/AverageLoss';
 import { averagegain } from '../Utils/AverageGain';
-import { bearishinvertedhammerstick } from './BearishInvertedHammerStick';
-import { bullishinvertedhammerstick } from './BullishInvertedHammerStick';
+import { bearishinvertedhammerstick, DEFAULT_BEARISH_INVERTED_HAMMER_CONFIG } from './BearishInvertedHammerStick';
+import { bullishinvertedhammerstick, DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG } from './BullishInvertedHammerStick';
+
+/**
+ * Configuration interface for ShootingStarUnconfirmed pattern.
+ * Extends ShootingStar configuration.
+ */
+export interface IShootingStarUnconfirmedConfig extends IShootingStarConfig {
+    // No additional properties needed - inherits from ShootingStar
+}
+
+/**
+ * Default configuration for ShootingStarUnconfirmed pattern.
+ */
+export const DEFAULT_SHOOTING_STAR_UNCONFIRMED_CONFIG: IShootingStarUnconfirmedConfig = {
+    ...DEFAULT_SHOOTING_STAR_CONFIG
+};
 
 export default class ShootingStarUnconfirmed extends ShootingStar {
-    constructor(scale: number = 1) {
-        super(scale);
+    constructor(config: IShootingStarUnconfirmedConfig = DEFAULT_SHOOTING_STAR_UNCONFIRMED_CONFIG) {
+        super(config);
         this.name = 'ShootingStarUnconfirmed';
         this.requiredCount = 4; // Reduced from 5 since no confirmation needed
     }
@@ -70,8 +85,9 @@ export default class ShootingStarUnconfirmed extends ShootingStar {
             high: data.high.slice(start, end),
         };
 
-        let isPattern = bearishinvertedhammerstick(possibleInvertedHammerData, this.scale);
-        isPattern = isPattern || bullishinvertedhammerstick(possibleInvertedHammerData, this.scale);
+        // Use the updated inverted hammer functions with config objects
+        let isPattern = bearishinvertedhammerstick(possibleInvertedHammerData, DEFAULT_BEARISH_INVERTED_HAMMER_CONFIG);
+        isPattern = isPattern || bullishinvertedhammerstick(possibleInvertedHammerData, DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG);
 
         // If not detected by standard inverted hammer logic, check for doji with upper shadow
         if (!isPattern) {
@@ -94,6 +110,36 @@ export default class ShootingStarUnconfirmed extends ShootingStar {
     }
 }
 
-export function shootingstarunconfirmed(data:StockData, scale: number = 1) {
-  return new ShootingStarUnconfirmed(scale).hasPattern(data);
+/**
+ * Detects ShootingStarUnconfirmed candlestick pattern in the provided stock data.
+ * 
+ * A ShootingStarUnconfirmed is a bearish reversal pattern that appears at the end of an uptrend.
+ * Unlike the confirmed version, this pattern doesn't require confirmation from the next candle.
+ * It consists of:
+ * 1. An uptrend in the first 3 candles
+ * 2. An inverted hammer-like candle (small body with long upper shadow) at the 4th position
+ * 
+ * This pattern suggests potential bearish reversal but is less reliable than the confirmed version.
+ * 
+ * @param data - Stock data containing OHLC values for at least 4 periods
+ * @param config - Configuration object for pattern detection
+ * @param config.scale - Scale parameter for approximateEqual function precision (default: 0.001)
+ * @returns True if ShootingStarUnconfirmed pattern is detected, false otherwise
+ * 
+ * @example
+ * ```typescript
+ * // Using default configuration
+ * const hasShootingStarUnconfirmedPattern = shootingstarunconfirmed(stockData);
+ * 
+ * // Using custom configuration
+ * const hasShootingStarUnconfirmedPattern = shootingstarunconfirmed(stockData, {
+ *   scale: 0.002
+ * });
+ * 
+ * // Backward compatibility with scale parameter
+ * const hasShootingStarUnconfirmedPattern = shootingstarunconfirmed(stockData, { scale: 0.002 });
+ * ```
+ */
+export function shootingstarunconfirmed(data: StockData, config: IShootingStarUnconfirmedConfig = DEFAULT_SHOOTING_STAR_UNCONFIRMED_CONFIG) {
+  return new ShootingStarUnconfirmed(config).hasPattern(data);
 }

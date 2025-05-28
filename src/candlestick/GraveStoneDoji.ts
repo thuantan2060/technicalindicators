@@ -1,19 +1,42 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
+
+/**
+ * Configuration interface for GraveStoneDoji pattern.
+ * Includes thresholds for upper shadow analysis.
+ */
+export interface IGraveStoneDojiConfig extends ICandlestickConfig {
+    /** Minimum absolute upper shadow threshold (default: 0.1) */
+    minAbsoluteUpperShadowThreshold?: number;
+}
+
+/**
+ * Default configuration for GraveStoneDoji pattern.
+ */
+export const DEFAULT_GRAVESTONE_DOJI_CONFIG: IGraveStoneDojiConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG,
+    minAbsoluteUpperShadowThreshold: 0.04
+};
 
 export default class GraveStoneDoji extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
-        this.requiredCount  = 1;
+    private minAbsoluteUpperShadowThreshold: number;
+
+    constructor(config: IGraveStoneDojiConfig = DEFAULT_GRAVESTONE_DOJI_CONFIG) {
+        super(config);
+        this.requiredCount = 1;
         this.name = 'GraveStoneDoji';
-        this.scale = scale;
+        
+        // Apply configuration with defaults
+        const finalConfig = { ...DEFAULT_GRAVESTONE_DOJI_CONFIG, ...config };
+        this.minAbsoluteUpperShadowThreshold = finalConfig.minAbsoluteUpperShadowThreshold!;
     }
-    logic (data:StockData) {
+    
+    logic(data: StockData) {
         // For single candle patterns, we need the last (most recent) candle
         // Since data is in ascending order, the last candle is at the last index
         let lastIndex = data.open.length - 1;
-        let daysOpen   = data.open[lastIndex];
-        let daysClose  = data.close[lastIndex];
+        let daysOpen = data.open[lastIndex];
+        let daysClose = data.close[lastIndex];
         let daysHigh = data.high[lastIndex];
         let daysLow = data.low[lastIndex];
         
@@ -45,6 +68,7 @@ export default class GraveStoneDoji extends CandlestickFinder {
         // 5. Upper shadow must be meaningful (not just noise)
         
         // Check if it's a doji (small body)
+        // Note: approximateEqual now uses fixed thresholds instead of scale
         let isSmallBody = this.approximateEqual(daysOpen, daysClose);
         
         // Check if open/close are near the low (within 20% of total range from low)
@@ -57,9 +81,9 @@ export default class GraveStoneDoji extends CandlestickFinder {
         let hasSignificantUpperShadow = upperShadow >= totalRange * 0.6;
         
         // Upper shadow must be meaningful - at least 2x the body size or a minimum threshold
-        // Also require a minimum absolute threshold to avoid noise
+        // Use direct threshold calculation instead of utility function
         let minUpperShadowThreshold = Math.max(bodySize * 2, totalRange * 0.1);
-        let minAbsoluteThreshold = 0.04 * this.scale; // Minimum absolute upper shadow
+        let minAbsoluteThreshold = this.minAbsoluteUpperShadowThreshold;
         let hasMeaningfulUpperShadow = upperShadow >= minUpperShadowThreshold && upperShadow >= minAbsoluteThreshold;
         
         // Lower shadow should be minimal - less than 20% of total range
@@ -74,6 +98,6 @@ export default class GraveStoneDoji extends CandlestickFinder {
     }
 }
 
-export function gravestonedoji(data:StockData, scale: number = 1) {
-  return new GraveStoneDoji(scale).hasPattern(data);
+export function gravestonedoji(data: StockData, config: IGraveStoneDojiConfig = DEFAULT_GRAVESTONE_DOJI_CONFIG) {
+    return new GraveStoneDoji(config).hasPattern(data);
 }

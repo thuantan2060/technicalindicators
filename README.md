@@ -189,82 +189,283 @@ If you like this project. You'll love my other project [crypto trading hub](http
 
 All candlestick patterns support a `scale` parameter that adjusts the sensitivity of pattern detection. The scale affects the tolerance used in the `approximateEqual` function for comparing price values.
 
-### Default Scale (scale = 1)
-The patterns are designed to work optimally with **daily candles**. The default scale of `1` works well for daily timeframes because it provides the right balance of sensitivity for pattern detection.
+### Understanding the Scale Parameter
 
-**Important**: The tolerance automatically scales with price levels, so you don't need to adjust scale based on instrument price (XAUUSD vs BTCUSD vs stocks).
+The scale parameter controls how "close" two prices need to be to be considered "approximately equal". This is crucial for patterns that rely on price equality comparisons.
 
-### When to Adjust Scale
+**💡 Key Insight**: Lower scale = more sensitive (stricter matching), Higher scale = less sensitive (looser matching)
+
+**🎯 Perfect Reference Pattern**: The **Doji pattern** is the ideal reference for understanding scale behavior because it depends entirely on the condition `open ≈ close`. When you see a Doji detected, it means the scale parameter allowed the open and close prices to be considered "approximately equal".
+
+### How approximateEqual Works
+
+```javascript
+function approximateEqual(a, b) {
+    let difference = parseFloat(Math.abs(a - b).toPrecision(4));
+    return difference <= this.scale;
+}
+```
+
+**Examples with different scales:**
+```javascript
+// With scale = 0.1 (default)
+approximateEqual(100.00, 100.05) // → 0.05 ≤ 0.1 → TRUE
+approximateEqual(100.00, 100.15) // → 0.15 ≤ 0.1 → FALSE
+
+// With scale = 1.0 (daily candles)
+approximateEqual(100.00, 100.50) // → 0.5 ≤ 1.0 → TRUE
+approximateEqual(100.00, 101.50) // → 1.5 ≤ 1.0 → FALSE
+```
+
+### Default Scale (scale = 0.1)
+The patterns are designed to work optimally with **5-15 minute candles**. The default scale of `0.1` provides balanced sensitivity for most intraday trading scenarios.
+
+**Important**: The tolerance automatically scales with price levels, so you don't need to adjust scale based on instrument price (EURUSD vs BTCUSD vs XAUUSD vs stocks).
+
+### Timeframe-Based Scale Recommendations
 
 The scale should be adjusted based on **timeframe and volatility**, not price level:
 
 **For Lower Timeframes (Higher Volatility):**
-- **1-minute candles**: Use `scale = 0.3-0.5` (decrease scale)
-- **5-minute candles**: Use `scale = 0.5-0.7` (decrease scale)  
-- **15-minute candles**: Use `scale = 0.7-0.8` (decrease scale)
-- **1-hour candles**: Use `scale = 0.8-0.9` (decrease scale)
+- **1-minute candles**: Use `scale = 0.01-0.05` (very sensitive)
+- **5-minute candles**: Use `scale = 0.05-0.1` (sensitive)  
+- **15-minute candles**: Use `scale = 0.1-0.3` (moderate)
+- **1-hour candles**: Use `scale = 0.3-0.7` (balanced)
 
 **For Higher Timeframes (Lower Volatility):**
-- **Daily candles**: Use `scale = 1` (default)
-- **Weekly candles**: Use `scale = 1.2-1.5` (increase scale)
-- **Monthly candles**: Use `scale = 1.5-2.0` (increase scale)
+- **4-hour candles**: Use `scale = 0.5-1.0` (relaxed)
+- **Daily candles**: Use `scale = 1.0` (traditional default)
+- **Weekly candles**: Use `scale = 1.5-2.0` (very relaxed)
+- **Monthly candles**: Use `scale = 2.0-3.0` (extremely relaxed)
 
 **Reasoning**: Lower timeframe candles have smaller price oscillations and require more sensitive pattern detection (lower scale). Higher timeframe candles have larger price movements and need less sensitive detection (higher scale).
 
-### Usage Examples
+### Practical Examples
 
-``` javascript
-// Daily candles (default) - works for any price level
-const doji = require('@thuantan2060/technicalindicators').doji;
+#### Example 1: Doji Pattern Detection
+```javascript
+const { doji } = require('@thuantan2060/technicalindicators');
 
-// XAUUSD daily candles (price ~$2500)
-doji({
-  open: [2500.00],
-  high: [2505.00],
-  close: [2502.00],
-  low: [2498.00]
-}); // Uses scale = 1 (default)
+// Test data: open and close are very close (0.01 difference)
+const testData = {
+  open: [100.00],
+  high: [100.20], 
+  close: [100.01],  // Very small body
+  low: [99.80]
+};
 
-// BTCUSD daily candles (price ~$50000) 
-doji({
-  open: [50000],
-  high: [50200],
-  close: [50100],
-  low: [49800]
-}); // Uses scale = 1 (default) - price level doesn't matter
-
-// 5-minute candles on EURUSD (lower timeframe = decrease scale)
-const bearish = require('@thuantan2060/technicalindicators').bearish;
-bearish({
-  open: [1.1000, 1.1010],
-  high: [1.1015, 1.1020],
-  close: [1.0995, 1.0990],
-  low: [1.0990, 1.0985]
-}, 0.6); // scale = 0.6 (decreased for 5-minute candles)
-
-// Weekly candles on any instrument (higher timeframe = increase scale)
-const BullishHammer = require('@thuantan2060/technicalindicators').BullishHammer;
-new BullishHammer(1.3).hasPattern({
-  open: [100],
-  high: [105],
-  close: [103],
-  low: [98]
-}); // scale = 1.3 (increased for weekly candles)
+// Different scale sensitivities
+console.log(doji(testData, { scale: 0.005 })); // false - too sensitive
+console.log(doji(testData, { scale: 0.01 }));  // true  - just right
+console.log(doji(testData, { scale: 0.1 }));   // true  - also works
+console.log(doji(testData, { scale: 1.0 }));   // true  - very tolerant
 ```
 
-### How Scale Works
+#### Example 2: Bullish Marubozu Pattern
+```javascript
+const { bullishmarubozu } = require('@thuantan2060/technicalindicators');
 
-The scale parameter affects the tolerance calculation in pattern detection:
-- **Minimum threshold**: `0.001 * scale`
-- **Relative threshold**: `Math.abs(price) * 0.001 * scale`
-- **Final tolerance**: `Math.max(minThreshold, relativeThreshold)`
+// Test data: small shadows that may or may not be acceptable
+const testData = {
+  open: [99.90],   // 0.1 difference from low
+  high: [100.20],
+  close: [100.10], // 0.1 difference from high  
+  low: [99.80]
+};
 
-The tolerance **automatically scales with price level** through the relative threshold. For example:
-- At $100 with scale=1: tolerance = max(0.001, 100 * 0.001 * 1) = 0.1
-- At $2500 with scale=1: tolerance = max(0.001, 2500 * 0.001 * 1) = 2.5  
-- At $50000 with scale=1: tolerance = max(0.001, 50000 * 0.001 * 1) = 50
+// Scale determines if small shadows are acceptable
+console.log(bullishmarubozu(testData, { scale: 0.05 })); // false - shadows too big
+console.log(bullishmarubozu(testData, { scale: 0.1 }));  // true  - shadows acceptable
+console.log(bullishmarubozu(testData, { scale: 0.5 }));  // true  - very tolerant
+```
 
-This means higher-priced instruments automatically get higher tolerance, so you only need to adjust scale for different timeframes.
+#### Example 3: Multi-Timeframe Strategy
+```javascript
+const { Doji } = require('@thuantan2060/technicalindicators');
+
+// Same price data, different timeframes require different scales
+const priceData = {
+  open: [100.00],
+  high: [100.15], 
+  close: [100.05],  // 0.05 difference
+  low: [99.85]
+};
+
+// 1-minute chart (high sensitivity needed)
+const doji1m = new Doji({ scale: 0.03 });
+console.log(doji1m.hasPattern(priceData)); // false - too strict
+
+// 15-minute chart (moderate sensitivity)
+const doji15m = new Doji({ scale: 0.1 });
+console.log(doji15m.hasPattern(priceData)); // true - balanced
+
+// Daily chart (low sensitivity)
+const dojiDaily = new Doji({ scale: 1.0 });
+console.log(dojiDaily.hasPattern(priceData)); // true - very tolerant
+```
+
+### Scale vs Pattern Complexity
+
+Different patterns use the `approximateEqual` function in different ways:
+
+1. **Simple Equality Patterns** (Doji, Marubozu):
+   - Directly compare two prices (open ≈ close, close ≈ high, etc.)
+   - Scale has immediate, predictable impact
+
+2. **Complex Multi-Condition Patterns** (Hammer, Engulfing, Stars):
+   - Use multiple `approximateEqual` calls
+   - Scale affects multiple conditions simultaneously
+   - May have additional threshold parameters beyond scale
+
+3. **Trend-Dependent Patterns** (Hanging Man, Shooting Star):
+   - Combine price equality with trend analysis
+   - Scale affects pattern recognition, not trend detection
+
+## Advanced Threshold Configuration
+
+**NEW**: For advanced users who need fine-grained control over pattern detection sensitivity, the library now supports both comprehensive and pattern-specific configurable thresholds.
+
+### Pattern-Specific Threshold Interfaces (Recommended)
+
+Each candlestick pattern now supports its own specific threshold interface that includes only the relevant parameters for that pattern. This approach provides better type safety, memory efficiency, and developer experience.
+
+#### Available Pattern-Specific Interfaces
+
+```typescript
+// Doji patterns (Doji, DragonFly Doji, GraveStone Doji)
+interface IDojiThresholds {
+    bodyTolerancePercent: number;        // Default: 0.015 (1.5%)
+    bodyToleranceMinimum: number;        // Default: 0.00015
+    minBodyComparisonPercent: number;    // Default: 0.0001 (0.01%)
+    minimumThreshold: number;            // Default: 0.0001
+    absoluteMinimum: number;             // Default: 0.0001
+}
+
+// Hammer patterns (Hammer, Inverted Hammer, Bullish/Bearish Hammer)
+interface IHammerThresholds {
+    // Includes: IShadowThresholds + IBodyThresholds + IGeneralThresholds
+    shadowSizeThresholdPercent: number;  // Default: 0.001 (0.1%)
+    minShadowSizePercent: number;        // Default: 0.001 (0.1%)
+    minAbsoluteShadow: number;           // Default: 0.0003
+    bodyTolerancePercent: number;        // Default: 0.015 (1.5%)
+    // ... and more
+}
+
+// Engulfing patterns (Bullish/Bearish Engulfing)
+interface IEngulfingThresholds {
+    bodyTolerancePercent: number;        // Default: 0.015 (1.5%)
+    bodyToleranceMinimum: number;        // Default: 0.00015
+    minBodyComparisonPercent: number;    // Default: 0.0001 (0.01%)
+    minimumThreshold: number;            // Default: 0.0001
+    absoluteMinimum: number;             // Default: 0.0001
+}
+
+// And many more pattern-specific interfaces...
+```
+
+#### Using Pattern-Specific Thresholds
+
+```javascript
+const { Doji } = require('@thuantan2060/technicalindicators');
+
+// Create a Doji pattern with only relevant thresholds
+const customDojiThresholds = {
+    bodyTolerancePercent: 0.01,      // Tighter body tolerance (1% instead of 1.5%)
+    minimumThreshold: 0.00005        // More sensitive minimum threshold
+};
+
+const sensitiveDojiPattern = new Doji(0.001, customDojiThresholds);
+
+// Test with data
+const result = sensitiveDojiPattern.hasPattern({
+    open: [100.50],
+    high: [100.75],
+    close: [100.52],  // Very small body
+    low: [100.25]
+});
+
+// Update thresholds after creation using pattern-specific methods
+const dojiPattern = new Doji();
+dojiPattern.setDojiThresholds({
+    bodyTolerancePercent: 0.005  // Even tighter tolerance
+});
+
+// Get current pattern-specific thresholds
+const currentThresholds = dojiPattern.getDojiThresholds();
+console.log(currentThresholds.bodyTolerancePercent); // 0.005
+```
+
+### Legacy Comprehensive ThresholdConfig (Backward Compatible)
+
+The original comprehensive interface is still supported for backward compatibility:
+
+```typescript
+interface ThresholdConfig {
+    minimumThreshold: number;                    // Default: 0.0001
+    shadowSizeThresholdPercent: number;          // Default: 0.001 (0.1% of range)
+    movementThreshold: number;                   // Default: 0.001
+    absoluteMinimum: number;                     // Default: 0.0001
+    bodyTolerancePercent: number;                // Default: 0.015 (1.5%)
+    bodyToleranceMinimum: number;                // Default: 0.00015
+    minBodyComparisonPercent: number;            // Default: 0.0001 (0.01% of range)
+    minShadowSizePercent: number;                // Default: 0.001 (0.1% of range)
+    minAbsoluteShadow: number;                   // Default: 0.0003
+    minAbsoluteUpperShadow: number;              // Default: 0.0004
+    minMovementConfirmationPercent: number;      // Default: 0.01 (1%)
+    minMovementConfirmationMinimum: number;      // Default: 0.0001
+}
+```
+
+### Migration Guide
+
+**Benefits of Pattern-Specific Thresholds:**
+- **Memory Efficiency**: Only store thresholds relevant to each pattern
+- **Type Safety**: TypeScript prevents setting irrelevant thresholds
+- **Better Developer Experience**: Clear which thresholds apply to each pattern
+- **Easier Maintenance**: Focused configuration per pattern type
+
+**Migration Examples:**
+
+```javascript
+// Before (comprehensive config with many unused properties)
+const doji = new Doji(0.001, {
+    minimumThreshold: 0.00005,
+    shadowSizeThresholdPercent: 0.0005,  // Not used by Doji
+    movementThreshold: 0.001,            // Not used by Doji
+    bodyTolerancePercent: 0.01,
+    // ... 8 more properties that Doji doesn't use
+});
+
+// After (pattern-specific config with only relevant properties)
+const doji = new Doji(0.001, {
+    minimumThreshold: 0.00005,
+    bodyTolerancePercent: 0.01           // Only relevant properties
+});
+```
+
+### Pattern-Specific Threshold Categories
+
+1. **Body-focused patterns** (Doji, Engulfing, Marubozu, Star, Harami, Three patterns, Piercing, Tweezer, Abandoned Baby):
+   - Use `IBodyThresholds` + `IGeneralThresholds`
+   - Configure body size tolerances and comparison thresholds
+
+2. **Shadow-focused patterns** (Hammer, Spinning Top):
+   - Use `IShadowThresholds` + `IBodyThresholds` + `IGeneralThresholds`
+   - Configure shadow size thresholds and body relationships
+
+3. **Movement-confirmation patterns** (Hanging Man, Shooting Star):
+   - Use `IShadowThresholds` + `IMovementThresholds` + `IGeneralThresholds`
+   - Configure shadow analysis and movement confirmation requirements
+
+### Threshold Configuration Benefits
+
+- **Market-Specific Tuning**: Adjust sensitivity for different markets (crypto vs forex vs stocks)
+- **Volatility Adaptation**: Fine-tune detection for high/low volatility periods
+- **Strategy Optimization**: Customize thresholds based on backtesting results
+- **Precision Control**: Replace one-size-fits-all approach with targeted configuration
+- **Memory Efficiency**: Only configure relevant parameters for each pattern
+
+**Note**: Both the legacy comprehensive ThresholdConfig and new pattern-specific interfaces are fully supported. The scale parameter continues to work alongside both threshold systems for complete backward compatibility.
 
 ## Available Patterns
 

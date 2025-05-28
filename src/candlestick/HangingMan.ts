@@ -1,19 +1,54 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
 import { averageloss } from '../Utils/AverageLoss';
 import { averagegain } from '../Utils/AverageGain';
-import { bearishhammerstick } from './BearishHammerStick';
-import { bullishhammerstick } from './BullishHammerStick';
+
+/**
+ * Configuration interface for HangingMan pattern.
+ * Includes thresholds for movement and confirmation analysis.
+ */
+export interface IHangingManConfig extends ICandlestickConfig {
+    /** Minimum threshold for absolute measurements (default: 0.01) */
+    minimumThreshold?: number;
+    /** Absolute minimum for very small values (default: 0.001) */
+    absoluteMinimum?: number;
+    /** Movement threshold multiplier for confirmation (default: 1.0) */
+    movementThresholdBase?: number;
+    /** Movement threshold scale factor (default: 0.3) */
+    movementThresholdScale?: number;
+}
+
+/**
+ * Default configuration for HangingMan pattern.
+ */
+export const DEFAULT_HANGING_MAN_CONFIG: IHangingManConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG,
+    minimumThreshold: 0.01,
+    absoluteMinimum: 0.001,
+    movementThresholdBase: 1.0,
+    movementThresholdScale: 0.3
+};
 
 export default class HangingMan extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
+    private minimumThreshold: number;
+    private absoluteMinimum: number;
+    private movementThresholdBase: number;
+    private movementThresholdScale: number;
+
+    constructor(config: IHangingManConfig = DEFAULT_HANGING_MAN_CONFIG) {
+        super(config);
         this.name = 'HangingMan';
         this.requiredCount = 5;
-        this.scale = scale;
+        
+        // Apply configuration with defaults
+        const finalConfig = { ...DEFAULT_HANGING_MAN_CONFIG, ...config };
+        this.minimumThreshold = finalConfig.minimumThreshold!;
+        this.absoluteMinimum = finalConfig.absoluteMinimum!;
+        this.movementThresholdBase = finalConfig.movementThresholdBase!;
+        this.movementThresholdScale = finalConfig.movementThresholdScale!;
     }
 
-    logic (data:StockData) {
+    logic(data: StockData) {
         // Validate data integrity first
         for (let i = 0; i < data.close.length; i++) {
             if (!this.validateOHLC(data.open[i], data.high[i], data.low[i], data.close[i])) {
@@ -29,7 +64,7 @@ export default class HangingMan extends CandlestickFinder {
         return isPattern;
     }
 
-    upwardTrend (data:StockData) {
+    upwardTrend(data: StockData) {
         // For hanging man, we need an uptrend in the first 4 candles (indices 0-3)
         // Since data is in ascending order, we analyze the trend leading up to the hammer
         
@@ -67,7 +102,7 @@ export default class HangingMan extends CandlestickFinder {
         return latestGain > latestLoss && totalMovement >= minMovement;
     }
 
-    includesHammer (data:StockData) {
+    includesHammer(data: StockData) {
         // The hammer should be at index 3 (4th candle) in the 5-candle pattern
         // This is the candle just before the confirmation candle
         
@@ -113,13 +148,14 @@ export default class HangingMan extends CandlestickFinder {
         let bodyNotTooLarge = bodySize <= totalRange * 0.9;
 
         // For very small ranges, ensure minimum absolute lower shadow
-        let minAbsoluteLowerShadow = 0.01 * this.scale;
+        // Use direct threshold calculation instead of utility function
+        let minAbsoluteLowerShadow = this.minimumThreshold * this.scale;
         let hasMinimumShadow = lowerShadow >= minAbsoluteLowerShadow;
 
         return hasSignificantLowerShadow && lowerShadowDominates && bodyNotTooLarge && hasMinimumShadow;
     }
 
-    hasConfirmation (data:StockData) {
+    hasConfirmation(data: StockData) {
         // Ensure we have enough data (need 5 candles total)
         if (data.close.length < 5) {
             return false;
@@ -152,7 +188,7 @@ export default class HangingMan extends CandlestickFinder {
         let confirmationRange = confirmationCandle.high - confirmationCandle.low;
         let minConfirmationBearishness = Math.max(
             confirmationRange * 0.1, // At least 10% of confirmation candle's range
-            0.5 * this.scale // Or absolute minimum based on scale
+            this.absoluteMinimum * this.scale * 5 // Use direct threshold calculation
         );
         let isStrongBearishConfirmation = confirmationBearishness >= minConfirmationBearishness;
         
@@ -165,9 +201,9 @@ export default class HangingMan extends CandlestickFinder {
         let downwardMovement = hammerCandle.close - confirmationCandle.close;
         
         // Require meaningful downward movement - at least 15% of hammer's range
-        // or at least some absolute minimum based on scale
+        // Use direct threshold calculation instead of utility function
         let minMovementRatio = 0.15; // 15% of hammer range
-        let minAbsoluteMovement = 1.0 + (0.3 * this.scale); // More gradual scale impact
+        let minAbsoluteMovement = this.movementThresholdBase + (this.movementThresholdScale * this.scale);
         let requiredMovement = Math.max(hammerRange * minMovementRatio, minAbsoluteMovement);
         
         let hasSignificantDownwardMovement = downwardMovement >= requiredMovement;
@@ -176,6 +212,6 @@ export default class HangingMan extends CandlestickFinder {
     }
 }
 
-export function hangingman(data:StockData, scale: number = 1) {
-  return new HangingMan(scale).hasPattern(data);
+export function hangingman(data: StockData, config: IHangingManConfig = DEFAULT_HANGING_MAN_CONFIG) {
+    return new HangingMan(config).hasPattern(data);
 }

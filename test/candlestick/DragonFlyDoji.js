@@ -322,7 +322,7 @@ describe('DragonFly Doji : ', function() {
     var dragonFlyDoji = new DragonFlyDoji();
     var outsideToleranceData = {
       open: [30.100],
-      high: [30.200], // Outside tolerance
+      high: [30.300], // Outside tolerance
       close: [30.100],
       low: [25.000],
     };

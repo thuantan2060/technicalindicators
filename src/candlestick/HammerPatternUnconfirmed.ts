@@ -1,14 +1,38 @@
 import StockData from '../StockData';
-import HammerPattern from './HammerPattern';
+import HammerPattern, { IHammerPatternConfig, DEFAULT_HAMMER_PATTERN_CONFIG } from './HammerPattern';
+import { bearishhammerstick, DEFAULT_BEARISH_HAMMER_STICK_CONFIG, IBearishHammerStickConfig } from './BearishHammerStick';
+import { bearishinvertedhammerstick, DEFAULT_BEARISH_INVERTED_HAMMER_CONFIG, IBearishInvertedHammerConfig } from './BearishInvertedHammerStick';
+import { bullishhammerstick, DEFAULT_BULLISH_HAMMER_CONFIG, IBullishHammerConfig } from './BullishHammerStick';
+import { bullishinvertedhammerstick, DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG, IBullishInvertedHammerStickConfig } from './BullishInvertedHammerStick';
+
+/**
+ * Configuration interface for HammerPatternUnconfirmed.
+ * Extends HammerPattern configuration.
+ */
+export interface IHammerPatternUnconfirmedConfig extends IHammerPatternConfig, IBullishHammerConfig, IBullishInvertedHammerStickConfig, IBearishHammerStickConfig, IBearishInvertedHammerConfig {
+    // No additional properties needed - inherits from HammerPattern
+}
+
+/**
+ * Default configuration for HammerPatternUnconfirmed.
+ */
+export const DEFAULT_HAMMER_PATTERN_UNCONFIRMED_CONFIG: IHammerPatternUnconfirmedConfig = {
+    ...DEFAULT_HAMMER_PATTERN_CONFIG,
+    ...DEFAULT_BULLISH_HAMMER_CONFIG,
+    ...DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG,
+    ...DEFAULT_BEARISH_HAMMER_STICK_CONFIG,
+    ...DEFAULT_BEARISH_INVERTED_HAMMER_CONFIG
+};
 
 export default class HammerPatternUnconfirmed extends HammerPattern {
-    constructor(scale: number = 1) {
-        super(scale);
+
+    constructor(config: IHammerPatternUnconfirmedConfig = DEFAULT_HAMMER_PATTERN_UNCONFIRMED_CONFIG) {
+        super(config);
         this.name = 'HammerPatternUnconfirmed';
         this.requiredCount = 4; // Reduced from 5 since no confirmation needed
     }
 
-    logic (data:StockData) {
+    logic(data: StockData) {
         // Validate data integrity first
         for (let i = 0; i < data.close.length; i++) {
             if (!this.validateOHLC(data.open[i], data.high[i], data.low[i], data.close[i])) {
@@ -21,10 +45,10 @@ export default class HammerPatternUnconfirmed extends HammerPattern {
         let isPattern = this.downwardTrend(data, false);
         isPattern = isPattern && this.includesHammer(data, false);
         return isPattern;
-   }
+    }
 
-   // Override the downwardTrend method to be more lenient for unconfirmed patterns
-   downwardTrend (data:StockData, confirm = true) {
+    // Override the downwardTrend method to be more lenient for unconfirmed patterns
+    downwardTrend(data: StockData, confirm = true) {
         // Ensure we have enough data
         if (data.close.length < (confirm ? 5 : 4)) {
             return false;
@@ -55,7 +79,7 @@ export default class HammerPatternUnconfirmed extends HammerPattern {
     }
 
     // Override includesHammer to work with 4 candles instead of 5
-    includesHammer (data:StockData, confirm = true) {
+    includesHammer(data: StockData, confirm = true) {
         // Ensure we have the required data
         if (data.close.length < (confirm ? 5 : 4)) {
             return false;
@@ -71,21 +95,16 @@ export default class HammerPatternUnconfirmed extends HammerPattern {
             high: [data.high[hammerIndex]],
         };
 
-        // Import the hammer stick functions
-        const { bearishhammerstick } = require('./BearishHammerStick');
-        const { bearishinvertedhammerstick } = require('./BearishInvertedHammerStick');
-        const { bullishhammerstick } = require('./BullishHammerStick');
-        const { bullishinvertedhammerstick } = require('./BullishInvertedHammerStick');
-
-        let isPattern = bearishhammerstick(possibleHammerData, this.scale);
-        isPattern = isPattern || bearishinvertedhammerstick(possibleHammerData, this.scale);
-        isPattern = isPattern || bullishhammerstick(possibleHammerData, this.scale);
-        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData, this.scale);
+        // Use the appropriate function signatures - mix of updated and not yet updated
+        let isPattern = bearishhammerstick(possibleHammerData, this.config);
+        isPattern = isPattern || bearishinvertedhammerstick(possibleHammerData, this.config);
+        isPattern = isPattern || bullishhammerstick(possibleHammerData, this.config);
+        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData, this.config);
 
         return isPattern;
     }
 }
 
-export function hammerpatternunconfirmed(data:StockData, scale: number = 1) {
-  return new HammerPatternUnconfirmed(scale).hasPattern(data);
+export function hammerpatternunconfirmed(data: StockData, config: IHammerPatternUnconfirmedConfig = DEFAULT_HAMMER_PATTERN_UNCONFIRMED_CONFIG) {
+    return new HammerPatternUnconfirmed(config).hasPattern(data);
 }

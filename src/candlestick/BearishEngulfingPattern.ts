@@ -1,12 +1,26 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
+
+/**
+ * Configuration interface for BearishEngulfingPattern.
+ * Only requires scale parameter since this pattern uses direct price comparisons.
+ */
+export interface IBearishEngulfingConfig extends ICandlestickConfig {
+    // No additional properties needed - only uses scale for approximateEqual
+}
+
+/**
+ * Default configuration for BearishEngulfingPattern.
+ */
+export const DEFAULT_BEARISH_ENGULFING_CONFIG: IBearishEngulfingConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG
+};
 
 export default class BearishEngulfingPattern extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
+    constructor(config: IBearishEngulfingConfig = DEFAULT_BEARISH_ENGULFING_CONFIG) {
+        super(config);
         this.name = 'BearishEngulfingPattern';
         this.requiredCount  = 2;
-        this.scale = scale;
     }
     logic (data:StockData) {
         // Previous day (older) - index 0
@@ -46,6 +60,32 @@ export default class BearishEngulfingPattern extends CandlestickFinder {
    }
 }
 
-export function bearishengulfingpattern(data:StockData, scale: number = 1) {
-    return new BearishEngulfingPattern(scale).hasPattern(data);
+/**
+ * Detects Bearish Engulfing candlestick pattern in the provided stock data.
+ * 
+ * A Bearish Engulfing pattern consists of two candlesticks where a large bearish candle
+ * completely engulfs the previous smaller bullish candle. This pattern indicates a potential
+ * reversal from bullish to bearish sentiment.
+ * 
+ * @param data - Stock data containing OHLC values for at least 2 periods
+ * @param config - Configuration object for pattern detection
+ * @param config.scale - Scale parameter for approximateEqual function precision (default: 0.001)
+ * @returns True if Bearish Engulfing pattern is detected, false otherwise
+ * 
+ * @example
+ * ```typescript
+ * // Using default configuration
+ * const hasBearishEngulfingPattern = bearishengulfingpattern(stockData);
+ * 
+ * // Using custom configuration
+ * const hasBearishEngulfingPattern = bearishengulfingpattern(stockData, {
+ *   scale: 0.002
+ * });
+ * 
+ * // Backward compatibility with scale parameter
+ * const hasBearishEngulfingPattern = bearishengulfingpattern(stockData, { scale: 0.002 });
+ * ```
+ */
+export function bearishengulfingpattern(data: StockData, config: IBearishEngulfingConfig = DEFAULT_BEARISH_ENGULFING_CONFIG) {
+    return new BearishEngulfingPattern(config).hasPattern(data);
 }

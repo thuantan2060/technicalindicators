@@ -1,17 +1,32 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
+
+/**
+ * Configuration interface for DragonFlyDoji pattern.
+ * Only requires scale parameter since this pattern uses approximateEqual for body tolerance.
+ */
+export interface IDragonFlyDojiConfig extends ICandlestickConfig {
+    // No additional properties needed - only uses scale for approximateEqual
+}
+
+/**
+ * Default configuration for DragonFlyDoji pattern.
+ */
+export const DEFAULT_DRAGONFLY_DOJI_CONFIG: IDragonFlyDojiConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG
+};
 
 export default class DragonFlyDoji extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
-        this.requiredCount  = 1;
+    constructor(config: IDragonFlyDojiConfig = DEFAULT_DRAGONFLY_DOJI_CONFIG) {
+        super(config);
+        this.requiredCount = 1;
         this.name = 'DragonFlyDoji';
-        this.scale = scale;
     }
-    logic (data:StockData) {
-        let daysOpen   = data.open[0];
-        let daysClose  = data.close[0];
-        let daysHigh   = data.high[0];
+    
+    logic(data: StockData) {
+        let daysOpen = data.open[0];
+        let daysClose = data.close[0];
+        let daysHigh = data.high[0];
         let daysLow = data.low[0];
         
         // Basic validation - check for NaN or infinite values and basic OHLC constraints
@@ -25,6 +40,7 @@ export default class DragonFlyDoji extends CandlestickFinder {
         }
         
         // DragonFly Doji: Open ≈ Close, and both are near the High, with a long lower shadow
+        // Note: approximateEqual now uses fixed thresholds instead of scale
         let isOpenEqualsClose = this.approximateEqual(daysOpen, daysClose);
         
         // Calculate shadows and body
@@ -53,6 +69,6 @@ export default class DragonFlyDoji extends CandlestickFinder {
     }
 }
 
-export function dragonflydoji(data:StockData, scale: number = 1) {
-  return new DragonFlyDoji(scale).hasPattern(data);
+export function dragonflydoji(data: StockData, config: IDragonFlyDojiConfig = DEFAULT_DRAGONFLY_DOJI_CONFIG) {
+    return new DragonFlyDoji(config).hasPattern(data);
 }

@@ -1,25 +1,40 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
+
+/**
+ * Configuration interface for BullishEngulfingPattern.
+ * Only requires scale parameter since this pattern uses direct price comparisons.
+ */
+export interface IBullishEngulfingConfig extends ICandlestickConfig {
+    // No additional properties needed - only uses scale for approximateEqual and validateOHLC
+}
+
+/**
+ * Default configuration for BullishEngulfingPattern.
+ */
+export const DEFAULT_BULLISH_ENGULFING_CONFIG: IBullishEngulfingConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG
+};
 
 export default class BullishEngulfingPattern extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
+    constructor(config: IBullishEngulfingConfig = DEFAULT_BULLISH_ENGULFING_CONFIG) {
+        super(config);
         this.name = 'BullishEngulfingPattern';
-        this.requiredCount  = 2;
-        this.scale = scale;
+        this.requiredCount = 2;
     }
-    logic (data:StockData) {
+    
+    logic(data: StockData) {
         // Previous day (older) - index 0
-        let prevOpen  = data.open[0];
+        let prevOpen = data.open[0];
         let prevClose = data.close[0];
-        let prevHigh  = data.high[0];
-        let prevLow   = data.low[0];
+        let prevHigh = data.high[0];
+        let prevLow = data.low[0];
         
         // Current day (most recent) - index 1
-        let currOpen   = data.open[1];
-        let currClose  = data.close[1];
-        let currHigh   = data.high[1];
-        let currLow    = data.low[1];
+        let currOpen = data.open[1];
+        let currClose = data.close[1];
+        let currHigh = data.high[1];
+        let currLow = data.low[1];
         
         // Validate OHLC data
         if (!this.validateOHLC(currOpen, currHigh, currLow, currClose) ||
@@ -57,9 +72,9 @@ export default class BullishEngulfingPattern extends CandlestickFinder {
         let isBullishEngulfing = prevIsBearish && currIsBullish && isEngulfing;
                     
         return isBullishEngulfing;
-   }
+    }
 }
 
-export function bullishengulfingpattern(data:StockData, scale: number = 1) {
-  return new BullishEngulfingPattern(scale).hasPattern(data);
+export function bullishengulfingpattern(data: StockData, config: IBullishEngulfingConfig = DEFAULT_BULLISH_ENGULFING_CONFIG) {
+    return new BullishEngulfingPattern(config).hasPattern(data);
 }

@@ -1,13 +1,41 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
+
+/**
+ * Configuration interface for BullishHammerStick pattern.
+ * Includes thresholds for shadow and body analysis.
+ */
+export interface IBullishHammerConfig extends ICandlestickConfig {
+    /** Shadow size threshold as percentage of total range (default: 0.001 = 0.1%) */
+    shadowSizeThresholdPercent?: number;
+    /** Minimum body comparison as percentage of total range (default: 0.0001 = 0.01%) */
+    minBodyComparisonPercent?: number;
+}
+
+/**
+ * Default configuration for BullishHammerStick pattern.
+ */
+export const DEFAULT_BULLISH_HAMMER_CONFIG: IBullishHammerConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG,
+    shadowSizeThresholdPercent: 0.001,
+    minBodyComparisonPercent: 0.0001
+};
 
 export default class BullishHammerStick extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
+    private shadowSizeThresholdPercent: number;
+    private minBodyComparisonPercent: number;
+
+    constructor(config: IBullishHammerConfig = DEFAULT_BULLISH_HAMMER_CONFIG) {
+        super(config);
         this.name = 'BullishHammerStick';
-        this.requiredCount  = 1;
-        this.scale = scale;
+        this.requiredCount = 1;
+        
+        // Apply configuration with defaults
+        const finalConfig = { ...DEFAULT_BULLISH_HAMMER_CONFIG, ...config };
+        this.shadowSizeThresholdPercent = finalConfig.shadowSizeThresholdPercent!;
+        this.minBodyComparisonPercent = finalConfig.minBodyComparisonPercent!;
     }
+    
     logic (data:StockData) {
         let daysOpen  = data.open[0];
         let daysClose = data.close[0];
@@ -36,14 +64,19 @@ export default class BullishHammerStick extends CandlestickFinder {
         }
         
         // Handle very small bodies (doji-like hammers)
-        let minBodyForComparison = Math.max(bodySize, totalRange * 0.01 / this.scale);
+        // Use direct threshold calculation instead of utility function
+        let minBodyForComparison = Math.max(
+            bodySize, 
+            totalRange * this.minBodyComparisonPercent
+        );
         
         // The lower shadow should be at least twice the effective body size
         isBullishHammer = isBullishHammer && (lowerShadow >= 2 * minBodyForComparison);
         
-        // Ensure there's a significant lower shadow relative to the total range and scale
+        // Ensure there's a significant lower shadow relative to the total range
+        // Use direct threshold calculations instead of utility functions
         let minShadowSize = Math.max(
-            totalRange * 0.3 / this.scale,  // At least 30% of total range divided by scale
+            totalRange * this.shadowSizeThresholdPercent * 300,  // Replaces: getShadowSizeThreshold(totalRange) * 300
             minBodyForComparison * 2  // At least twice the effective body size
         );
         isBullishHammer = isBullishHammer && (lowerShadow >= minShadowSize);
@@ -52,6 +85,6 @@ export default class BullishHammerStick extends CandlestickFinder {
     }
 }
 
-export function bullishhammerstick(data:StockData, scale: number = 1) {
-  return new BullishHammerStick(scale).hasPattern(data);
+export function bullishhammerstick(data:StockData, options: IBullishHammerConfig = DEFAULT_BULLISH_HAMMER_CONFIG) {
+    return new BullishHammerStick(options).hasPattern(data);
 }

@@ -1,12 +1,26 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
+
+/**
+ * Configuration interface for BearishHaramiCross pattern.
+ * Only requires scale parameter since this pattern uses direct price comparisons.
+ */
+export interface IBearishHaramiCrossConfig extends ICandlestickConfig {
+    // No additional properties needed - only uses scale for approximateEqual and validateOHLC
+}
+
+/**
+ * Default configuration for BearishHaramiCross pattern.
+ */
+export const DEFAULT_BEARISH_HARAMI_CROSS_CONFIG: IBearishHaramiCrossConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG
+};
 
 export default class BearishHaramiCross extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
-        this.requiredCount  = 2;
+    constructor(config: IBearishHaramiCrossConfig = DEFAULT_BEARISH_HARAMI_CROSS_CONFIG) {
+        super(config);
+        this.requiredCount = 2;
         this.name = 'BearishHaramiCross';
-        this.scale = scale;
     }
 
     logic (data:StockData) {
@@ -38,7 +52,15 @@ export default class BearishHaramiCross extends CandlestickFinder {
         let isPrevSignificant = prevRange > 0 && (prevBodySize / prevRange) >= 0.5;
         
         // Current day should be a doji (open ≈ close)
-        let isCurrDoji = this.approximateEqual(currOpen, currClose);
+        // For higher-priced stocks, use a percentage-based approach for doji detection
+        let bodySize = Math.abs(currClose - currOpen);
+        let avgPrice = (currOpen + currClose) / 2;
+        let percentageDiff = avgPrice > 0 ? (bodySize / avgPrice) : 0;
+        
+        // Consider it a doji if:
+        // 1. The absolute difference is within the scale threshold, OR
+        // 2. The percentage difference is less than 0.1% (very small body relative to price)
+        let isCurrDoji = this.approximateEqual(currOpen, currClose) || percentageDiff <= 0.001;
         
         // Containment: Current doji should be completely contained within previous candle's body
         // For a bullish previous candle: prevClose > prevOpen
@@ -59,6 +81,6 @@ export default class BearishHaramiCross extends CandlestickFinder {
    }
 }
 
-export function bearishharamicross(data:StockData, scale: number = 1) {
-  return new BearishHaramiCross(scale).hasPattern(data);
+export function bearishharamicross(data: StockData, config: IBearishHaramiCrossConfig = DEFAULT_BEARISH_HARAMI_CROSS_CONFIG) {
+    return new BearishHaramiCross(config).hasPattern(data);
 }

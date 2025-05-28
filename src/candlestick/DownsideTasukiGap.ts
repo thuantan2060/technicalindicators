@@ -1,13 +1,28 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
+
+/**
+ * Configuration interface for DownsideTasukiGap pattern.
+ * Only requires scale parameter since this pattern uses direct price comparisons.
+ */
+export interface IDownsideTasukiGapConfig extends ICandlestickConfig {
+    // No additional properties needed - only uses scale for approximateEqual and validateOHLC
+}
+
+/**
+ * Default configuration for DownsideTasukiGap pattern.
+ */
+export const DEFAULT_DOWNSIDE_TASUKI_GAP_CONFIG: IDownsideTasukiGapConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG
+};
 
 export default class DownsideTasukiGap extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
+    constructor(config: IDownsideTasukiGapConfig = DEFAULT_DOWNSIDE_TASUKI_GAP_CONFIG) {
+        super(config);
         this.requiredCount  = 3;
         this.name = 'DownsideTasukiGap';
-        this.scale = scale;
     }
+    
     logic (data:StockData) {
         // Based on ascending chronological order: [day1, day2, day3]
         // [0]=oldest (day 1), [1]=middle (day 2), [2]=most recent (day 3)
@@ -54,14 +69,42 @@ export default class DownsideTasukiGap extends CandlestickFinder {
         // 6. Day 3 must NOT fully close the gap (i.e., Day 3 close should not reach Day 1 low)
         let gapNotFullyClosed = thirddaysClose < firstdaysLow;
 
-
-
         return (isFirstBearish && isSecondBearish && isThirdBullish && 
                 isGapDown && day3OpensInDay2Body && day3ClosesInGap && gapNotFullyClosed);
         
    }
 }
 
-export function downsidetasukigap(data:StockData, scale: number = 1) {
-  return new DownsideTasukiGap(scale).hasPattern(data);
+/**
+ * Detects DownsideTasukiGap candlestick pattern in the provided stock data.
+ * 
+ * A DownsideTasukiGap is a three-candle continuation pattern that occurs during a downtrend.
+ * It consists of:
+ * 1. A bearish candle
+ * 2. A second bearish candle that gaps down from the first
+ * 3. A bullish candle that opens within the second candle's body and closes within the gap
+ * 
+ * This pattern suggests that the downtrend will continue despite the temporary bullish reversal.
+ * 
+ * @param data - Stock data containing OHLC values for at least 3 periods
+ * @param config - Configuration object for pattern detection
+ * @param config.scale - Scale parameter for approximateEqual function precision (default: 0.001)
+ * @returns True if DownsideTasukiGap pattern is detected, false otherwise
+ * 
+ * @example
+ * ```typescript
+ * // Using default configuration
+ * const hasDownsideTasukiGapPattern = downsidetasukigap(stockData);
+ * 
+ * // Using custom configuration
+ * const hasDownsideTasukiGapPattern = downsidetasukigap(stockData, {
+ *   scale: 0.002
+ * });
+ * 
+ * // Backward compatibility with scale parameter
+ * const hasDownsideTasukiGapPattern = downsidetasukigap(stockData, { scale: 0.002 });
+ * ```
+ */
+export function downsidetasukigap(data: StockData, config: IDownsideTasukiGapConfig = DEFAULT_DOWNSIDE_TASUKI_GAP_CONFIG) {
+  return new DownsideTasukiGap(config).hasPattern(data);
 }

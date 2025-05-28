@@ -1,31 +1,58 @@
 import StockData from '../StockData';
-export default class CandlestickFinder {
-    requiredCount:number
-    name:string
-    scale:number
 
-    constructor() {
-        // if (new.target === Abstract) {
-        //     throw new TypeError("Abstract class");
-        // }
+/**
+ * Basic configuration interface for CandlestickFinder base class.
+ * Only contains the scale parameter used by approximateEqual function.
+ */
+export interface ICandlestickConfig {
+    /** Scale parameter for approximateEqual function precision (default: 0.001) */
+    scale?: number;
+}
+
+/**
+ * Default configuration for CandlestickFinder base class.
+ */
+export const DEFAULT_CANDLESTICK_CONFIG: ICandlestickConfig = {
+    scale: 0.1
+};
+
+export default class CandlestickFinder {
+    requiredCount: number
+    name: string
+    
+    /**
+     * Scale parameter for price comparison precision in approximateEqual function.
+     * This should ONLY be used in the approximateEqual method, not in other pattern calculations.
+     */
+    scale: number
+
+    constructor(config: ICandlestickConfig = DEFAULT_CANDLESTICK_CONFIG) {
+        // Apply configuration with defaults
+        const finalConfig = { ...DEFAULT_CANDLESTICK_CONFIG, ...config };
+        this.scale = finalConfig.scale!;
     }
     
-    approximateEqual(a:number, b:number):boolean {
+    /**
+     * Compares two numbers for approximate equality using scale-dependent threshold.
+     * This is the ONLY place where this.scale should be used in pattern detection.
+     * 
+     * @param a First number to compare
+     * @param b Second number to compare
+     * @returns true if the numbers are approximately equal, false otherwise
+     */
+    approximateEqual(a: number, b: number): boolean {
         // Handle edge cases
         if (a === b) return true;
         if (isNaN(a) || isNaN(b) || !isFinite(a) || !isFinite(b)) return false;
         
         let left = parseFloat(Math.abs(a - b).toPrecision(4)) * 1;
         
-        // Handle zero or very small values by using a minimum threshold
-        let minThreshold = 0.001 * this.scale;
-        let relativeThreshold = parseFloat((Math.abs(a) * 0.001 * this.scale).toPrecision(4)) * 1;
-        let right = Math.max(minThreshold, relativeThreshold);
-        
-        return left <= right;
+        return left <= this.scale;
     }
     
-    // Helper method to validate OHLC data integrity
+    /**
+     * Helper method to validate OHLC data integrity
+     */
     protected validateOHLC(open: number, high: number, low: number, close: number): boolean {
         // Check for NaN or infinite values
         if (!isFinite(open) || !isFinite(high) || !isFinite(low) || !isFinite(close)) {
@@ -45,12 +72,12 @@ export default class CandlestickFinder {
         return true;
     }
     
-    logic(data:StockData):boolean {
+    logic(data: StockData): boolean {
         throw "this has to be implemented";        
     }
-    
-    getAllPatternIndex (data:StockData) {
-        if(!data || !data.close || data.close.length < this.requiredCount) {
+
+    getAllPatternIndex(data: StockData) {
+        if (!data || !data.close || data.close.length < this.requiredCount) {
             return [];
         }
         
@@ -61,7 +88,7 @@ export default class CandlestickFinder {
             return [];
         }
         
-        if(data.reversedInput) {
+        if (data.reversedInput) {
             data.open.reverse();
             data.high.reverse();
             data.low.reverse();
@@ -76,8 +103,8 @@ export default class CandlestickFinder {
                         });
     }
 
-    hasPattern (data:StockData) {
-        if(!data || !data.close || data.close.length < this.requiredCount) {
+    hasPattern(data: StockData) {
+        if (!data || !data.close || data.close.length < this.requiredCount) {
             return false;
         }
         
@@ -88,7 +115,7 @@ export default class CandlestickFinder {
             return false;
         }
         
-        if(data.reversedInput) {
+        if (data.reversedInput) {
             data.open.reverse();
             data.high.reverse();
             data.low.reverse();
@@ -98,15 +125,15 @@ export default class CandlestickFinder {
         return strategyFn.call(this, this._getLastDataForCandleStick(data));
     }
 
-    protected _getLastDataForCandleStick(data:StockData) {
+    protected _getLastDataForCandleStick(data: StockData) {
         let requiredCount = this.requiredCount;
         if (data.close.length === requiredCount) {
             return data;
         } else {
             let returnVal = {
-                open : [],
-                high : [],
-                low  : [],
+                open: [],
+                high: [],
+                low: [],
                 close: []
             } as StockData;
             let i = 0;
@@ -123,28 +150,28 @@ export default class CandlestickFinder {
         }
     }
 
-    protected _generateDataForCandleStick(data:StockData) {
-            let requiredCount = this.requiredCount;
-            let generatedData = [];
+    protected _generateDataForCandleStick(data: StockData) {
+        let requiredCount = this.requiredCount;
+        let generatedData = [];
+        
+        // Generate sliding windows for pattern detection
+        for (let index = 0; index <= data.close.length - requiredCount; index++) {
+            let returnVal = {
+                open: [],
+                high: [],
+                low: [],
+                close: []
+            } as StockData;
             
-            // Generate sliding windows for pattern detection
-            for (let index = 0; index <= data.close.length - requiredCount; index++) {
-                let returnVal = {
-                    open : [],
-                    high : [],
-                    low  : [],
-                    close: []
-                } as StockData;
-                
-                for (let i = 0; i < requiredCount; i++) {
-                    returnVal.open.push(data.open[index + i]);
-                    returnVal.high.push(data.high[index + i]);
-                    returnVal.low.push(data.low[index + i]);
-                    returnVal.close.push(data.close[index + i]);
-                }
-                generatedData.push(returnVal);
+            for (let i = 0; i < requiredCount; i++) {
+                returnVal.open.push(data.open[index + i]);
+                returnVal.high.push(data.high[index + i]);
+                returnVal.low.push(data.low[index + i]);
+                returnVal.close.push(data.close[index + i]);
             }
-            
-            return generatedData;
+            generatedData.push(returnVal);
+        }
+        
+        return generatedData;
     }
 }

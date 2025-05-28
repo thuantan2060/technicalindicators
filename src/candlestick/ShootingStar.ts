@@ -1,19 +1,33 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
 import { averageloss } from '../Utils/AverageLoss';
 import { averagegain } from '../Utils/AverageGain';
-import { bearishinvertedhammerstick } from './BearishInvertedHammerStick';
-import { bullishinvertedhammerstick } from './BullishInvertedHammerStick';
+import { bearishinvertedhammerstick, DEFAULT_BEARISH_INVERTED_HAMMER_CONFIG } from './BearishInvertedHammerStick';
+import { bullishinvertedhammerstick, DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG } from './BullishInvertedHammerStick';
+
+/**
+ * Configuration interface for ShootingStar pattern.
+ * Only requires scale parameter since this pattern uses direct price comparisons.
+ */
+export interface IShootingStarConfig extends ICandlestickConfig {
+    // No additional properties needed - only uses scale for validateOHLC and inverted hammer detection
+}
+
+/**
+ * Default configuration for ShootingStar pattern.
+ */
+export const DEFAULT_SHOOTING_STAR_CONFIG: IShootingStarConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG
+};
 
 export default class ShootingStar extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
+    constructor(config: IShootingStarConfig = DEFAULT_SHOOTING_STAR_CONFIG) {
+        super(config);
         this.name = 'ShootingStar';
         this.requiredCount = 5;
-        this.scale = scale;
     }
 
-    logic (data:StockData) {
+    logic(data: StockData) {
         // Validate data integrity first
         for (let i = 0; i < data.close.length; i++) {
             if (!this.validateOHLC(data.open[i], data.high[i], data.low[i], data.close[i])) {
@@ -27,7 +41,7 @@ export default class ShootingStar extends CandlestickFinder {
         return isPattern;
     }
 
-    upwardTrend (data:StockData, confirm = true) {
+    upwardTrend(data: StockData, confirm = true) {
         let end = confirm ? 3 : 4;
         
         // Ensure we have enough data
@@ -53,7 +67,7 @@ export default class ShootingStar extends CandlestickFinder {
         return latestGain > latestLoss && latestGain > minMovement;
     }
 
-    includesInvertedHammer (data:StockData, confirm = true) {
+    includesInvertedHammer(data: StockData, confirm = true) {
         // For ascending order data, the shooting star is at index 3 (4th candle)
         let start = 3;
         let end = 4;
@@ -70,13 +84,14 @@ export default class ShootingStar extends CandlestickFinder {
             high: data.high.slice(start, end),
         };
 
-        let isPattern = bearishinvertedhammerstick(possibleHammerData, this.scale);
-        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData, this.scale);
+        // Use the updated inverted hammer functions with config objects
+        let isPattern = bearishinvertedhammerstick(possibleHammerData, DEFAULT_BEARISH_INVERTED_HAMMER_CONFIG);
+        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData, DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG);
 
         return isPattern;
     }
 
-    hasConfirmation (data:StockData) {
+    hasConfirmation(data: StockData) {
         // Ensure we have enough data
         if (data.close.length < 5) {
             return false;
@@ -116,6 +131,6 @@ export default class ShootingStar extends CandlestickFinder {
     }
 }
 
-export function shootingstar(data:StockData, scale: number = 1) {
-  return new ShootingStar(scale).hasPattern(data);
+export function shootingstar(data: StockData, config: IShootingStarConfig = DEFAULT_SHOOTING_STAR_CONFIG) {
+    return new ShootingStar(config).hasPattern(data);
 }

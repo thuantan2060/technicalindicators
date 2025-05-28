@@ -1,18 +1,46 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
+
+/**
+ * Configuration interface for BearishHammerStick pattern.
+ * Extends base config with hammer-specific threshold properties.
+ */
+export interface IBearishHammerStickConfig extends ICandlestickConfig {
+    /** Shadow size threshold as percentage of total range (default: 0.3 = 3%) */
+    shadowSizeThresholdPercent?: number;
+    /** Minimum body comparison as percentage of total range (default: 0.0001 = 0.01%) */
+    minBodyComparisonPercent?: number;
+}
+
+/**
+ * Default configuration for BearishHammerStick pattern.
+ */
+export const DEFAULT_BEARISH_HAMMER_STICK_CONFIG: IBearishHammerStickConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG,
+    shadowSizeThresholdPercent: 0.3,
+    minBodyComparisonPercent: 0.0001,
+};
 
 export default class BearishHammerStick extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
+    private shadowSizeThresholdPercent: number;
+    private minBodyComparisonPercent: number;
+
+    constructor(config: IBearishHammerStickConfig = DEFAULT_BEARISH_HAMMER_STICK_CONFIG) {
+        super(config);
         this.name = 'BearishHammerStick';
-        this.requiredCount  = 1;
-        this.scale = scale;
+        this.requiredCount = 1;
+        
+        // Apply configuration with defaults
+        const finalConfig = { ...DEFAULT_BEARISH_HAMMER_STICK_CONFIG, ...config };
+        this.shadowSizeThresholdPercent = finalConfig.shadowSizeThresholdPercent!;
+        this.minBodyComparisonPercent = finalConfig.minBodyComparisonPercent!;
     }
-    logic (data:StockData) {
-        let daysOpen  = data.open[0];
+    
+    logic(data: StockData) {
+        let daysOpen = data.open[0];
         let daysClose = data.close[0];
-        let daysHigh  = data.high[0];
-        let daysLow   = data.low[0];
+        let daysHigh = data.high[0];
+        let daysLow = data.low[0];
 
         // Basic OHLC validation
         if (!this.validateOHLC(daysOpen, daysHigh, daysLow, daysClose)) {
@@ -28,38 +56,35 @@ export default class BearishHammerStick extends CandlestickFinder {
         // Calculate sizes
         let bodySize = daysOpen - daysClose;
         let lowerShadow = daysClose - daysLow;
-        let upperShadow = daysHigh - daysOpen;
         let totalRange = daysHigh - daysLow;
         
-        // For a hammer pattern, we need:
-        // 1. A significant lower shadow
-        // 2. Small body relative to the total range
-        // 3. Small upper shadow
+        // Ensure we have a meaningful range to work with
+        if (totalRange <= 0) {
+            return false;
+        }
         
-        // The lower shadow should be meaningful - at least 1.5 times the body size
-        // This is more lenient than the traditional 2x requirement
-        let minShadowRatio = 1.5;
-        isBearishHammer = isBearishHammer && (lowerShadow >= minShadowRatio * bodySize);
+        // Handle very small bodies (doji-like hammers)
+        // For shadow comparison, use actual body size but ensure a minimum threshold for very small bodies
+        let minBodyThreshold = totalRange * this.minBodyComparisonPercent;
+        let effectiveBodyForShadowComparison = Math.max(bodySize, minBodyThreshold);
+        
+        // The lower shadow should be at least 1.5 times the effective body size (more lenient than 2x)
+        let shadowVsBodyCheck = lowerShadow >= 1.5 * effectiveBodyForShadowComparison;
         
         // Ensure there's a significant lower shadow relative to the total range
-        // The lower shadow should be at least 40% of the total range
-        let minRelativeShadow = totalRange * 0.4;
+        // Use OR logic: either percentage-based OR body-based threshold should be satisfied
+        let percentageBasedThreshold = totalRange * this.shadowSizeThresholdPercent;
+        let bodyBasedThreshold = effectiveBodyForShadowComparison * 1.5;  // Updated to match the check above
         
-        // For very small ranges, ensure a minimum absolute shadow size
-        let minAbsoluteShadow = 0.3 * this.scale;
+        let shadowVsRangeCheck = lowerShadow >= percentageBasedThreshold || lowerShadow >= bodyBasedThreshold;
         
-        let requiredShadow = Math.max(minAbsoluteShadow, minRelativeShadow);
-        isBearishHammer = isBearishHammer && (lowerShadow >= requiredShadow);
-        
-        // The body should be relatively small compared to the total range
-        // Body should be no more than 40% of the total range for a good hammer
-        let maxBodyRatio = 0.4;
-        isBearishHammer = isBearishHammer && (bodySize <= totalRange * maxBodyRatio);
+        // Both checks should pass
+        isBearishHammer = isBearishHammer && shadowVsBodyCheck && shadowVsRangeCheck;
 
         return isBearishHammer;
     }
 }
 
-export function bearishhammerstick(data:StockData, scale: number = 1) {
-  return new BearishHammerStick(scale).hasPattern(data);
+export function bearishhammerstick(data: StockData, config: IBearishHammerStickConfig = DEFAULT_BEARISH_HAMMER_STICK_CONFIG) {
+    return new BearishHammerStick(config).hasPattern(data);
 }

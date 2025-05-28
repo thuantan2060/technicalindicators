@@ -1,21 +1,42 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
 import { averageloss } from '../Utils/AverageLoss';
 import { averagegain } from '../Utils/AverageGain';
-import { bearishhammerstick } from './BearishHammerStick';
-import { bearishinvertedhammerstick } from './BearishInvertedHammerStick';
-import { bullishhammerstick } from './BullishHammerStick';
-import { bullishinvertedhammerstick } from './BullishInvertedHammerStick';
+import { bearishhammerstick, DEFAULT_BEARISH_HAMMER_STICK_CONFIG, IBearishHammerStickConfig } from './BearishHammerStick';
+import { bearishinvertedhammerstick, DEFAULT_BEARISH_INVERTED_HAMMER_CONFIG, IBearishInvertedHammerConfig } from './BearishInvertedHammerStick';
+import { bullishhammerstick, DEFAULT_BULLISH_HAMMER_CONFIG, IBullishHammerConfig } from './BullishHammerStick';
+import { bullishinvertedhammerstick, DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG, IBullishInvertedHammerStickConfig } from './BullishInvertedHammerStick';
+
+/**
+ * Configuration interface for HammerPattern.
+ * Only requires scale parameter since this pattern uses direct price comparisons.
+ */
+export interface IHammerPatternConfig extends ICandlestickConfig, IBullishHammerConfig, IBullishInvertedHammerStickConfig, IBearishHammerStickConfig, IBearishInvertedHammerConfig {
+    // No additional properties needed - only uses scale for validateOHLC
+}
+
+/**
+ * Default configuration for HammerPattern.
+ */
+export const DEFAULT_HAMMER_PATTERN_CONFIG: IHammerPatternConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG,
+    ...DEFAULT_BULLISH_HAMMER_CONFIG,
+    ...DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG,
+    ...DEFAULT_BEARISH_HAMMER_STICK_CONFIG,
+    ...DEFAULT_BEARISH_INVERTED_HAMMER_CONFIG
+};
 
 export default class HammerPattern extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
+    protected readonly config: IHammerPatternConfig;
+
+    constructor(config: IHammerPatternConfig = DEFAULT_HAMMER_PATTERN_CONFIG) {
+        super(config);
         this.name = 'HammerPattern';
         this.requiredCount = 5;
-        this.scale = scale;
+        this.config = config;
     }
 
-    logic (data:StockData) {
+    logic(data: StockData) {
         // Validate data integrity first
         for (let i = 0; i < data.close.length; i++) {
             if (!this.validateOHLC(data.open[i], data.high[i], data.low[i], data.close[i])) {
@@ -29,7 +50,7 @@ export default class HammerPattern extends CandlestickFinder {
         return isPattern;
     }
 
-    downwardTrend (data:StockData, confirm = true) {
+    downwardTrend(data: StockData, confirm = true) {
         // Ensure we have enough data
         if (data.close.length < (confirm ? 5 : 4)) {
             return false;
@@ -58,7 +79,7 @@ export default class HammerPattern extends CandlestickFinder {
         return latestLoss > latestGain && latestLoss > minMovement && overallDecline;
     }
 
-    includesHammer (data:StockData, confirm = true) {
+    includesHammer(data: StockData, confirm = true) {
         // Ensure we have the required data
         if (data.close.length < (confirm ? 5 : 4)) {
             return false;
@@ -74,15 +95,16 @@ export default class HammerPattern extends CandlestickFinder {
             high: [data.high[hammerIndex]],
         };
 
-        let isPattern = bearishhammerstick(possibleHammerData, this.scale);
-        isPattern = isPattern || bearishinvertedhammerstick(possibleHammerData, this.scale);
-        isPattern = isPattern || bullishhammerstick(possibleHammerData, this.scale);
-        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData, this.scale);
+        // Use the appropriate function signatures - mix of updated and not yet updated
+        let isPattern = bearishhammerstick(possibleHammerData, this.config);
+        isPattern = isPattern || bearishinvertedhammerstick(possibleHammerData, this.config);
+        isPattern = isPattern || bullishhammerstick(possibleHammerData, this.config);
+        isPattern = isPattern || bullishinvertedhammerstick(possibleHammerData, this.config);
 
         return isPattern;
     }
 
-    hasConfirmation (data:StockData) {
+    hasConfirmation(data: StockData) {
         // Ensure we have enough data
         if (data.close.length < 5) {
             return false;
@@ -119,6 +141,6 @@ export default class HammerPattern extends CandlestickFinder {
     }
 }
 
-export function hammerpattern(data:StockData, scale: number = 1) {
-  return new HammerPattern(scale).hasPattern(data);
+export function hammerpattern(data: StockData, config: IHammerPatternConfig = DEFAULT_HAMMER_PATTERN_CONFIG) {
+    return new HammerPattern(config).hasPattern(data);
 }

@@ -1,14 +1,28 @@
 import StockData from '../StockData';
-import CandlestickFinder from './CandlestickFinder';
+import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } from './CandlestickFinder';
 import { averageloss } from '../Utils/AverageLoss';
 import { averagegain } from '../Utils/AverageGain';
 
+/**
+ * Configuration interface for TweezerTop pattern.
+ * Only requires scale parameter since this pattern uses direct price comparisons.
+ */
+export interface ITweezerTopConfig extends ICandlestickConfig {
+    // No additional properties needed - only uses scale for approximateEqual and validateOHLC
+}
+
+/**
+ * Default configuration for TweezerTop pattern.
+ */
+export const DEFAULT_TWEEZER_TOP_CONFIG: ITweezerTopConfig = {
+    ...DEFAULT_CANDLESTICK_CONFIG
+};
+
 export default class TweezerTop extends CandlestickFinder {
-    constructor(scale: number = 1) {
-        super();
+    constructor(config: ITweezerTopConfig = DEFAULT_TWEEZER_TOP_CONFIG) {
+        super(config);
         this.name = 'TweezerTop';
         this.requiredCount = 5;
-        this.scale = scale;
     }
 
     logic (data:StockData) {
@@ -69,16 +83,17 @@ export default class TweezerTop extends CandlestickFinder {
         };
         
         // Both candles should have approximately equal highs (the "tweezer" effect)
+        // Note: approximateEqual uses scale for price comparison precision
         let hasEqualHighs = this.approximateEqual(firstCandle.high, secondCandle.high);
         
-        // Additional criteria for a stronger pattern:
+        // Additional criteria for a stronger pattern (all use relative percentages, no scale dependency):
         // 1. Both candles should have meaningful bodies (not dojis) - relaxed requirement
         let firstBodySize = Math.abs(firstCandle.close - firstCandle.open);
         let secondBodySize = Math.abs(secondCandle.close - secondCandle.open);
         let firstRange = firstCandle.high - firstCandle.low;
         let secondRange = secondCandle.high - secondCandle.low;
         
-        // More lenient body size requirement (5% instead of 10%)
+        // More lenient body size requirement (5% instead of 10%) - relative percentage, no scale dependency
         let hasMeaningfulBodies = (firstBodySize >= firstRange * 0.05) && 
                                  (secondBodySize >= secondRange * 0.05);
         
@@ -95,6 +110,23 @@ export default class TweezerTop extends CandlestickFinder {
     }
 }
 
-export function tweezertop(data:StockData, scale: number = 1) {
-  return new TweezerTop(scale).hasPattern(data);
+/**
+ * Detects TweezerTop candlestick pattern.
+ * 
+ * A TweezerTop is a bearish reversal pattern that occurs at the end of an uptrend.
+ * It consists of two or more candles with approximately equal highs, suggesting
+ * resistance at that price level.
+ * 
+ * @param data - Stock data containing OHLC values
+ * @param config - Configuration options for the pattern detection
+ * @returns True if TweezerTop pattern is detected, false otherwise
+ * 
+ * @example
+ * ```typescript
+ * const data = { open: [...], high: [...], low: [...], close: [...] };
+ * const isPattern = tweezertop(data, { scale: 0.001 });
+ * ```
+ */
+export function tweezertop(data: StockData, config: ITweezerTopConfig = DEFAULT_TWEEZER_TOP_CONFIG) {
+    return new TweezerTop(config).hasPattern(data);
 }
