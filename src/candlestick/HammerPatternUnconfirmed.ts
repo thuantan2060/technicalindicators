@@ -26,8 +26,9 @@ export const DEFAULT_HAMMER_PATTERN_UNCONFIRMED_CONFIG: IHammerPatternUnconfirme
 
 export default class HammerPatternUnconfirmed extends HammerPattern {
 
-    constructor(config: IHammerPatternUnconfirmedConfig = DEFAULT_HAMMER_PATTERN_UNCONFIRMED_CONFIG) {
-        super(config);
+    constructor(config?: IHammerPatternUnconfirmedConfig) {
+        const finalConfig = { ...DEFAULT_HAMMER_PATTERN_UNCONFIRMED_CONFIG, ...config };
+        super(finalConfig);
         this.name = 'HammerPatternUnconfirmed';
         this.requiredCount = 4; // Reduced from 5 since no confirmation needed
     }
@@ -39,7 +40,7 @@ export default class HammerPatternUnconfirmed extends HammerPattern {
                 return false;
             }
         }
-        
+
         // Check for downward trend and hammer pattern without confirmation
         // Pass false to indicate this is an unconfirmed pattern
         let isPattern = this.downwardTrend(data, false);
@@ -53,19 +54,19 @@ export default class HammerPatternUnconfirmed extends HammerPattern {
         if (data.close.length < (confirm ? 5 : 4)) {
             return false;
         }
-        
+
         // For unconfirmed patterns, we need at least 3 candles before the hammer
         // to establish a downward trend
         let trendLength = confirm ? 3 : 3;
         let trendData = data.close.slice(0, trendLength);
-        
+
         // Simple downward trend check: first close > last close in trend
         let hasOverallDecline = trendData[0] > trendData[trendLength - 1];
-        
+
         // Additional check: ensure there's meaningful price movement
         let priceRange = Math.max(...trendData) - Math.min(...trendData);
         let minMovement = priceRange * 0.02; // At least 2% movement
-        
+
         // Check for at least one significant down move
         let hasSignificantMove = false;
         for (let i = 1; i < trendLength; i++) {
@@ -74,7 +75,7 @@ export default class HammerPatternUnconfirmed extends HammerPattern {
                 break;
             }
         }
-        
+
         return hasOverallDecline && hasSignificantMove;
     }
 
@@ -84,10 +85,10 @@ export default class HammerPatternUnconfirmed extends HammerPattern {
         if (data.close.length < (confirm ? 5 : 4)) {
             return false;
         }
-        
+
         // For unconfirmed pattern, check for hammer at the last index (index 3)
         let hammerIndex = confirm ? 3 : 3;
-        
+
         let possibleHammerData = {
             open: [data.open[hammerIndex]],
             close: [data.close[hammerIndex]],

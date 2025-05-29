@@ -46,11 +46,12 @@ export const DEFAULT_BEARISH_CONFIG: IBearishConfig = {
 
 export default class BearishPatterns extends CandlestickFinder {
     bearishPatterns: CandlestickFinder[];
-    
-    constructor(config: IBearishConfig = DEFAULT_BEARISH_CONFIG) {
-        super(config);
+
+    constructor(config?: IBearishConfig) {
+        const finalConfig = { ...DEFAULT_BEARISH_CONFIG, ...config };
+        super(finalConfig);
         this.name = 'Bearish Candlesticks';
-        
+
         // Initialize all bearish patterns with their default configurations
         this.bearishPatterns = [
             new BearishEngulfingPattern(config),
@@ -79,7 +80,7 @@ export default class BearishPatterns extends CandlestickFinder {
 
 /**
  * Detects any bearish candlestick pattern in the provided stock data.
- * 
+ *
  * This function checks for multiple bearish candlestick patterns including:
  * - Bearish Engulfing Pattern
  * - Bearish Harami and Bearish Harami Cross
@@ -89,22 +90,22 @@ export default class BearishPatterns extends CandlestickFinder {
  * - Bearish Hammer Stick and Bearish Inverted Hammer Stick
  * - Hanging Man and Shooting Star patterns
  * - Tweezer Top
- * 
+ *
  * @param data - Stock data containing OHLC values
  * @param config - Configuration object for pattern detection
  * @param config.scale - Scale parameter for approximateEqual function precision (default: 0.001)
  * @returns True if any bearish pattern is detected, false otherwise
- * 
+ *
  * @example
  * ```typescript
  * // Using default configuration
  * const hasBearishPattern = bearish(stockData);
- * 
+ *
  * // Using custom configuration
  * const hasBearishPattern = bearish(stockData, {
  *   scale: 0.002
  * });
- * 
+ *
  * // Backward compatibility with scale parameter
  * const hasBearishPattern = bearish(stockData, { scale: 0.002 });
  * ```

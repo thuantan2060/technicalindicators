@@ -17,44 +17,45 @@ export const DEFAULT_DRAGONFLY_DOJI_CONFIG: IDragonFlyDojiConfig = {
 };
 
 export default class DragonFlyDoji extends CandlestickFinder {
-    constructor(config: IDragonFlyDojiConfig = DEFAULT_DRAGONFLY_DOJI_CONFIG) {
-        super(config);
+    constructor(config?: IDragonFlyDojiConfig) {
+        const finalConfig = { ...DEFAULT_DRAGONFLY_DOJI_CONFIG, ...config };
+        super(finalConfig);
         this.requiredCount = 1;
         this.name = 'DragonFlyDoji';
     }
-    
+
     logic(data: StockData) {
         let daysOpen = data.open[0];
         let daysClose = data.close[0];
         let daysHigh = data.high[0];
         let daysLow = data.low[0];
-        
+
         // Basic validation - check for NaN or infinite values and basic OHLC constraints
         if (!isFinite(daysOpen) || !isFinite(daysHigh) || !isFinite(daysLow) || !isFinite(daysClose)) {
             return false;
         }
-        
+
         // Check basic OHLC constraints (works correctly for both positive and negative prices)
         if (daysHigh < Math.max(daysOpen, daysClose) || daysLow > Math.min(daysOpen, daysClose)) {
             return false;
         }
-        
+
         // DragonFly Doji: Open ≈ Close, and both are near the High, with a long lower shadow
         // Note: approximateEqual now uses fixed thresholds instead of scale
         let isOpenEqualsClose = this.approximateEqual(daysOpen, daysClose);
-        
+
         // Calculate shadows and body
         let bodySize = Math.abs(daysClose - daysOpen);
         let lowerShadow = Math.min(daysOpen, daysClose) - daysLow;
         let upperShadow = daysHigh - Math.max(daysOpen, daysClose);
         let totalRange = daysHigh - daysLow;
-        
+
         // For DragonFly Doji, the open/close should be near the high
         // Check if both open and close are individually close to high (more flexible approach)
         let isOpenNearHigh = this.approximateEqual(daysOpen, daysHigh);
         let isCloseNearHigh = this.approximateEqual(daysClose, daysHigh);
         let isBodyNearHigh = isOpenNearHigh || isCloseNearHigh;
-        
+
         // DragonFly Doji criteria:
         // 1. Open ≈ Close (small body)
         // 2. Open or Close near the High (body at the top)
@@ -64,7 +65,7 @@ export default class DragonFlyDoji extends CandlestickFinder {
         let hasBodyAtTop = isBodyNearHigh;
         let hasLongLowerShadow = lowerShadow >= Math.max(bodySize * 2, totalRange * 0.6);
         let hasMinimalUpperShadow = upperShadow <= totalRange * 0.1;
-        
+
         return hasSmallBody && hasBodyAtTop && hasLongLowerShadow && hasMinimalUpperShadow && totalRange > 0;
     }
 }

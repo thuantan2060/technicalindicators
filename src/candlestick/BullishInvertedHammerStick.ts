@@ -21,26 +21,23 @@ export const DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG: IBullishInvertedHamme
     ...DEFAULT_CANDLESTICK_CONFIG,
     shadowSizeThresholdPercent: 0.001,
     minBodyComparisonPercent: 0.0001,
-    minShadowSizePercent: 0.001
 };
 
 export default class BullishInvertedHammerStick extends CandlestickFinder {
     private shadowSizeThresholdPercent: number;
     private minBodyComparisonPercent: number;
-    private minShadowSizePercent: number;
 
-    constructor(config: IBullishInvertedHammerStickConfig = DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG) {
-        super(config);
+    constructor(config?: IBullishInvertedHammerStickConfig) {
+        const finalConfig = { ...DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG, ...config };
+        super(finalConfig);
         this.name = 'BullishInvertedHammerStick';
         this.requiredCount = 1;
-        
+
         // Apply configuration with defaults
-        const finalConfig = { ...DEFAULT_BULLISH_INVERTED_HAMMER_STICK_CONFIG, ...config };
         this.shadowSizeThresholdPercent = finalConfig.shadowSizeThresholdPercent!;
         this.minBodyComparisonPercent = finalConfig.minBodyComparisonPercent!;
-        this.minShadowSizePercent = finalConfig.minShadowSizePercent!;
     }
-    
+
     logic(data: StockData) {
         let daysOpen = data.open[0];
         let daysClose = data.close[0];
@@ -54,33 +51,33 @@ export default class BullishInvertedHammerStick extends CandlestickFinder {
 
         // Must be a bullish candle (green candle)
         let isBullishInvertedHammer = daysClose > daysOpen;
-        
+
         // Calculate sizes
         let bodySize = daysClose - daysOpen;
         let lowerShadow = daysOpen - daysLow;
         let upperShadow = daysHigh - daysClose;
         let totalRange = daysHigh - daysLow;
-        
+
         // Ensure we have a meaningful range to work with
         if (totalRange <= 0) {
             return false;
         }
-        
+
         // The lower shadow should be very small (low should be approximately equal to open)
         // For inverted hammer, we want minimal lower shadow
-        isBullishInvertedHammer = isBullishInvertedHammer && 
+        isBullishInvertedHammer = isBullishInvertedHammer &&
             (this.approximateEqual(daysOpen, daysLow) || lowerShadow <= bodySize * 0.1);
-        
+
         // Handle very small bodies (doji-like inverted hammers)
         // Use direct threshold calculation instead of utility function
         let minBodyForComparison = Math.max(
-            bodySize, 
+            bodySize,
             totalRange * this.minBodyComparisonPercent
         );
-        
+
         // The upper shadow should be at least twice the effective body size
         isBullishInvertedHammer = isBullishInvertedHammer && (upperShadow >= 2 * minBodyForComparison);
-        
+
         // Ensure there's a significant upper shadow relative to the total range
         // Use direct threshold calculations instead of utility functions
         let minShadowSize = Math.max(

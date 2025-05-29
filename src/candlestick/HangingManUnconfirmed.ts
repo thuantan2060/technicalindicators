@@ -25,11 +25,12 @@ export const DEFAULT_HANGING_MAN_UNCONFIRMED_CONFIG: IHangingManUnconfirmedConfi
 export default class HangingManUnconfirmed extends HangingMan {
     protected readonly config: IHangingManUnconfirmedConfig;
 
-    constructor(config: IHangingManUnconfirmedConfig = DEFAULT_HANGING_MAN_UNCONFIRMED_CONFIG) {
-        super(config);
+    constructor(config?: IHangingManUnconfirmedConfig) {
+        const finalConfig = { ...DEFAULT_HANGING_MAN_UNCONFIRMED_CONFIG, ...config };
+        super(finalConfig);
         this.name = 'HangingManUnconfirmed';
         this.requiredCount = 4; // Reduced from 5 since no confirmation needed
-        this.config = config;
+        this.config = finalConfig;
     }
 
     logic (data:StockData) {
@@ -39,7 +40,7 @@ export default class HangingManUnconfirmed extends HangingMan {
                 return false;
             }
         }
-        
+
         // Check for upward trend and hammer pattern without confirmation
         let isPattern = this.upwardTrend(data, false);
         isPattern = isPattern && this.includesHammer(data, false);
@@ -49,38 +50,38 @@ export default class HangingManUnconfirmed extends HangingMan {
     upwardTrend (data:StockData, confirm = false) {
         // For unconfirmed pattern, we need an uptrend in the first 3 candles (indices 0-2)
         // The 4th candle (index 3) is the potential hanging man
-        
+
         // Ensure we have enough data
         if (data.close.length < 4) {
             return false;
         }
-        
+
         // Analyze trends in closing prices of the first three candlesticks (indices 0-2)
         let trendData = data.close.slice(0, 3);
-        
+
         // Check for overall upward movement
         let firstClose = trendData[0];
         let lastClose = trendData[trendData.length - 1];
-        
+
         // Must have overall upward movement
         if (lastClose <= firstClose) {
             return false;
         }
-        
+
         // Calculate gains and losses for trend analysis
         let gains = averagegain({ values: trendData, period: trendData.length - 1 });
         let losses = averageloss({ values: trendData, period: trendData.length - 1 });
-        
+
         // Get the latest values from the arrays
         let latestGain = gains.length > 0 ? gains[gains.length - 1] : 0;
         let latestLoss = losses.length > 0 ? losses[losses.length - 1] : 0;
-        
+
         // Additional validation: ensure there's meaningful price movement
         let priceRange = Math.max(...trendData) - Math.min(...trendData);
         let totalMovement = Math.abs(lastClose - firstClose);
         // Use direct calculation instead of removed utility function
         let minMovement = Math.max(priceRange * 0.01, 0.001 * 10); // Replaces: this.getAbsoluteMinimum() * 10
-        
+
         // Upward trend: more gains than losses, and significant upward movement
         return latestGain > latestLoss && totalMovement >= minMovement;
     }
@@ -88,12 +89,12 @@ export default class HangingManUnconfirmed extends HangingMan {
     includesHammer (data:StockData, confirm = false) {
         // For unconfirmed pattern, check the last candle (index 3) for hammer pattern
         let hammerIndex = 3;
-        
+
         // Ensure we have the required data
         if (data.close.length < 4) {
             return false;
         }
-        
+
         // Create data for just the potential hammer candle
         let hammerData = {
             open: [data.open[hammerIndex]],
@@ -108,9 +109,9 @@ export default class HangingManUnconfirmed extends HangingMan {
 
         // Also check using our custom hammer-like detection for more flexibility
         let isCustomHammer = this.isCustomHammerLike(
-            data.open[hammerIndex], 
-            data.high[hammerIndex], 
-            data.low[hammerIndex], 
+            data.open[hammerIndex],
+            data.high[hammerIndex],
+            data.low[hammerIndex],
             data.close[hammerIndex]
         );
 
@@ -160,7 +161,7 @@ export default class HangingManUnconfirmed extends HangingMan {
         // Bonus for having both shadows (balanced)
         if (lowerShadow > 0 && upperShadow > 0) {
             score += 1;
-            
+
             // Extra bonus for perfectly balanced shadows
             let shadowDifference = Math.abs(lowerShadow - upperShadow);
             if (shadowDifference <= totalRange * 0.01) { // Very similar shadows
@@ -181,15 +182,15 @@ export default class HangingManUnconfirmed extends HangingMan {
 
 /**
  * Detects HangingManUnconfirmed candlestick pattern in the provided stock data.
- * 
+ *
  * A HangingManUnconfirmed is a bearish reversal pattern that appears at the end of an uptrend.
  * Unlike the confirmed version, this pattern doesn't require confirmation from the next candle.
  * It consists of:
  * 1. An uptrend in the first 3 candles
  * 2. A hammer-like candle (small body with long lower shadow) at the 4th position
- * 
+ *
  * This pattern suggests potential bearish reversal but is less reliable than the confirmed version.
- * 
+ *
  * @param data - Stock data containing OHLC values for at least 4 periods
  * @param config - Configuration object for pattern detection
  * @param config.scale - Scale parameter for approximateEqual function precision (default: 0.001)
@@ -198,19 +199,19 @@ export default class HangingManUnconfirmed extends HangingMan {
  * @param config.movementThresholdBase - Movement threshold multiplier for confirmation (default: 1.0)
  * @param config.movementThresholdScale - Movement threshold scale factor (default: 0.3)
  * @returns True if HangingManUnconfirmed pattern is detected, false otherwise
- * 
+ *
  * @example
  * ```typescript
  * // Using default configuration
  * const hasHangingManUnconfirmedPattern = hangingmanunconfirmed(stockData);
- * 
+ *
  * // Using custom configuration
  * const hasHangingManUnconfirmedPattern = hangingmanunconfirmed(stockData, {
  *   scale: 0.002,
  *   minimumThreshold: 0.02,
  *   movementThresholdBase: 1.5
  * });
- * 
+ *
  * // Backward compatibility with scale parameter
  * const hasHangingManUnconfirmedPattern = hangingmanunconfirmed(stockData, { scale: 0.002 });
  * ```

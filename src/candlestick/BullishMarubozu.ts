@@ -18,12 +18,13 @@ export const DEFAULT_BULLISH_MARUBOZU_CONFIG: IBullishMarubozuConfig = {
 };
 
 export default class BullishMarubozu extends CandlestickFinder {
-    constructor(config: IBullishMarubozuConfig = DEFAULT_BULLISH_MARUBOZU_CONFIG) {
-        super(config);
+    constructor(config?: IBullishMarubozuConfig) {
+        const finalConfig = { ...DEFAULT_BULLISH_MARUBOZU_CONFIG, ...config };
+        super(finalConfig);
         this.name = 'BullishMarubozu';
         this.requiredCount = 1;
     }
-    
+
     logic(data: StockData) {
         let daysOpen = data.open[0];
         let daysClose = data.close[0];
@@ -35,7 +36,7 @@ export default class BullishMarubozu extends CandlestickFinder {
         // Note: approximateEqual uses scale for price comparison precision
         let isCloseEqualsHigh = this.approximateEqual(daysClose, daysHigh);
         let isOpenEqualsLow = this.approximateEqual(daysOpen, daysLow);
-        
+
         let isBullishMarubozu = isBullish && isCloseEqualsHigh && isOpenEqualsLow;
 
         return isBullishMarubozu;

@@ -21,8 +21,9 @@ export const DEFAULT_SHOOTING_STAR_CONFIG: IShootingStarConfig = {
 };
 
 export default class ShootingStar extends CandlestickFinder {
-    constructor(config: IShootingStarConfig = DEFAULT_SHOOTING_STAR_CONFIG) {
-        super(config);
+    constructor(config?: IShootingStarConfig) {
+        const finalConfig = { ...DEFAULT_SHOOTING_STAR_CONFIG, ...config };
+        super(finalConfig);
         this.name = 'ShootingStar';
         this.requiredCount = 5;
     }
@@ -34,7 +35,7 @@ export default class ShootingStar extends CandlestickFinder {
                 return false;
             }
         }
-        
+
         let isPattern = this.upwardTrend(data);
         isPattern = isPattern && this.includesInvertedHammer(data);
         isPattern = isPattern && this.hasConfirmation(data);
@@ -43,26 +44,26 @@ export default class ShootingStar extends CandlestickFinder {
 
     upwardTrend(data: StockData, confirm = true) {
         let end = confirm ? 3 : 4;
-        
+
         // Ensure we have enough data
         if (data.close.length < end) {
             return false;
         }
-        
+
         // Analyze trends in closing prices of the first three or four candlesticks
         // For ascending order data, we look at the first 'end' elements
         let gains = averagegain({ values: data.close.slice(0, end), period: end - 1 });
         let losses = averageloss({ values: data.close.slice(0, end), period: end - 1 });
-        
+
         // Get the latest values from the arrays
         let latestGain = gains.length > 0 ? gains[gains.length - 1] : 0;
         let latestLoss = losses.length > 0 ? losses[losses.length - 1] : 0;
-        
+
         // Additional validation: ensure there's actual price movement
         let closeSlice = data.close.slice(0, end);
         let priceRange = Math.max(...closeSlice) - Math.min(...closeSlice);
         let minMovement = priceRange * 0.01; // At least 1% movement
-        
+
         // Upward trend, so more gains than losses, and significant movement
         return latestGain > latestLoss && latestGain > minMovement;
     }
@@ -71,12 +72,12 @@ export default class ShootingStar extends CandlestickFinder {
         // For ascending order data, the shooting star is at index 3 (4th candle)
         let start = 3;
         let end = 4;
-        
+
         // Ensure we have the required data
         if (data.close.length <= start) {
             return false;
         }
-        
+
         let possibleHammerData = {
             open: data.open.slice(start, end),
             close: data.close.slice(start, end),
@@ -96,7 +97,7 @@ export default class ShootingStar extends CandlestickFinder {
         if (data.close.length < 5) {
             return false;
         }
-        
+
         // For ascending order data:
         // Index 3 = shooting star (4th candle)
         // Index 4 = confirmation candle (5th candle, most recent)
@@ -112,21 +113,21 @@ export default class ShootingStar extends CandlestickFinder {
             low: data.low[4],
             high: data.high[4],
         }
-        
+
         // Validate OHLC data
         if (!this.validateOHLC(possibleStar.open, possibleStar.high, possibleStar.low, possibleStar.close) ||
             !this.validateOHLC(possibleConfirmation.open, possibleConfirmation.high, possibleConfirmation.low, possibleConfirmation.close)) {
             return false;
         }
-        
+
         // Confirmation candlestick should be bearish (shooting star is bearish reversal)
         let isBearishConfirmation = possibleConfirmation.open > possibleConfirmation.close;
-        
+
         // The confirmation should close lower than the shooting star's close
         // and show meaningful downward movement
         let downwardMovement = possibleStar.close - possibleConfirmation.close;
         let minMovement = (possibleStar.high - possibleStar.low) * 0.1; // At least 10% of star's range
-        
+
         return isBearishConfirmation && downwardMovement > 0 && downwardMovement >= minMovement;
     }
 }

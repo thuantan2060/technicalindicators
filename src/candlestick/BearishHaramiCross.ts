@@ -17,8 +17,9 @@ export const DEFAULT_BEARISH_HARAMI_CROSS_CONFIG: IBearishHaramiCrossConfig = {
 };
 
 export default class BearishHaramiCross extends CandlestickFinder {
-    constructor(config: IBearishHaramiCrossConfig = DEFAULT_BEARISH_HARAMI_CROSS_CONFIG) {
-        super(config);
+    constructor(config?: IBearishHaramiCrossConfig) {
+        const finalConfig = { ...DEFAULT_BEARISH_HARAMI_CROSS_CONFIG, ...config };
+        super(finalConfig);
         this.requiredCount = 2;
         this.name = 'BearishHaramiCross';
     }
@@ -29,7 +30,7 @@ export default class BearishHaramiCross extends CandlestickFinder {
         let prevClose  = data.close[0];
         let prevHigh   = data.high[0];
         let prevLow    = data.low[0];
-        
+
         // Current day (index 1) - should be a doji contained within previous body
         let currOpen  = data.open[1];
         let currClose = data.close[1];
@@ -46,35 +47,35 @@ export default class BearishHaramiCross extends CandlestickFinder {
         let isPrevBullish = prevClose > prevOpen;
         let prevBodySize = Math.abs(prevClose - prevOpen);
         let prevRange = prevHigh - prevLow;
-        
+
         // Ensure the previous candle has a reasonable body size
         // The body should be at least 50% of the total range (more strict requirement)
         let isPrevSignificant = prevRange > 0 && (prevBodySize / prevRange) >= 0.5;
-        
+
         // Current day should be a doji (open ≈ close)
         // For higher-priced stocks, use a percentage-based approach for doji detection
         let bodySize = Math.abs(currClose - currOpen);
         let avgPrice = (currOpen + currClose) / 2;
         let percentageDiff = avgPrice > 0 ? (bodySize / avgPrice) : 0;
-        
+
         // Consider it a doji if:
         // 1. The absolute difference is within the scale threshold, OR
         // 2. The percentage difference is less than 0.1% (very small body relative to price)
         let isCurrDoji = this.approximateEqual(currOpen, currClose) || percentageDiff <= 0.001;
-        
+
         // Containment: Current doji should be completely contained within previous candle's body
         // For a bullish previous candle: prevClose > prevOpen
         // So the body range is from prevOpen (bottom) to prevClose (top)
         let bodyTop = prevClose;   // For bullish candle, close is higher
         let bodyBottom = prevOpen; // For bullish candle, open is lower
-        
+
         // Current candle (including shadows) should be contained within previous body
         // Allow for exact boundary matches (<=, >=)
-        let hasContainment = currHigh <= bodyTop && 
+        let hasContainment = currHigh <= bodyTop &&
                            currLow >= bodyBottom &&
-                           currOpen >= bodyBottom && 
+                           currOpen >= bodyBottom &&
                            currOpen <= bodyTop &&
-                           currClose >= bodyBottom && 
+                           currClose >= bodyBottom &&
                            currClose <= bodyTop;
 
         return isPrevBullish && isPrevSignificant && isCurrDoji && hasContainment;

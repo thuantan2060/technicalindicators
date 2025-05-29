@@ -18,12 +18,13 @@ export const DEFAULT_BULLISH_SPINNING_TOP_CONFIG: IBullishSpinningTopConfig = {
 };
 
 export default class BullishSpinningTop extends CandlestickFinder {
-    constructor(config: IBullishSpinningTopConfig = DEFAULT_BULLISH_SPINNING_TOP_CONFIG) {
-        super(config);
+    constructor(config?: IBullishSpinningTopConfig) {
+        const finalConfig = { ...DEFAULT_BULLISH_SPINNING_TOP_CONFIG, ...config };
+        super(finalConfig);
         this.name = 'BullishSpinningTop';
         this.requiredCount = 1;
     }
-    
+
     logic(data: StockData) {
         let daysOpen = data.open[0];
         let daysClose = data.close[0];
@@ -37,15 +38,15 @@ export default class BullishSpinningTop extends CandlestickFinder {
 
         // Must be bullish (close > open)
         let isBullish = daysClose > daysOpen;
-        
+
         let bodyLength = Math.abs(daysClose - daysOpen);
         // For bullish candles: top of body is close, bottom is open
         let upperShadowLength = Math.abs(daysHigh - daysClose);
         let lowerShadowLength = Math.abs(daysOpen - daysLow);
-        
+
         // Spinning top: body length < both shadow lengths (relative comparison, no scale dependency)
-        let isBullishSpinningTop = isBullish && 
-                                 bodyLength < upperShadowLength && 
+        let isBullishSpinningTop = isBullish &&
+                                 bodyLength < upperShadowLength &&
                                  bodyLength < lowerShadowLength;
 
         return isBullishSpinningTop;

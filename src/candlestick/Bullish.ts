@@ -46,11 +46,12 @@ export const DEFAULT_BULLISH_CONFIG: IBullishConfig = {
 
 export default class BullishPatterns extends CandlestickFinder {
     bullishPatterns: CandlestickFinder[];
-    
-    constructor(config: IBullishConfig = DEFAULT_BULLISH_CONFIG) {
-        super(config);
+
+    constructor(config?: IBullishConfig) {
+        const finalConfig = { ...DEFAULT_BULLISH_CONFIG, ...config };
+        super(finalConfig);
         this.name = 'Bullish Candlesticks';
-        
+
         // Initialize all bullish patterns with their default configurations
         this.bullishPatterns = [
             new BullishEngulfingPattern(config),
@@ -80,7 +81,7 @@ export default class BullishPatterns extends CandlestickFinder {
 
 /**
  * Detects any bullish candlestick pattern in the provided stock data.
- * 
+ *
  * This function checks for multiple bullish candlestick patterns including:
  * - Bullish Engulfing Pattern
  * - Bullish Harami and Bullish Harami Cross
@@ -90,22 +91,22 @@ export default class BullishPatterns extends CandlestickFinder {
  * - Bullish Hammer Stick and Bullish Inverted Hammer Stick
  * - Hammer Pattern and Hammer Pattern Unconfirmed
  * - Downside Tasuki Gap, Piercing Line, and Tweezer Bottom
- * 
+ *
  * @param data - Stock data containing OHLC values
  * @param config - Configuration object for pattern detection
  * @param config.scale - Scale parameter for approximateEqual function precision (default: 0.001)
  * @returns True if any bullish pattern is detected, false otherwise
- * 
+ *
  * @example
  * ```typescript
  * // Using default configuration
  * const hasBullishPattern = bullish(stockData);
- * 
+ *
  * // Using custom configuration
  * const hasBullishPattern = bullish(stockData, {
  *   scale: 0.002
  * });
- * 
+ *
  * // Backward compatibility with scale parameter
  * const hasBullishPattern = bullish(stockData, { scale: 0.002 });
  * ```
