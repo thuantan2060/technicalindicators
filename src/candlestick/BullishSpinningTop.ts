@@ -3,26 +3,32 @@ import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } fro
 
 /**
  * Configuration interface for BullishSpinningTop pattern.
- * Only uses the scale parameter for approximateEqual function precision.
  */
 export interface IBullishSpinningTopConfig extends ICandlestickConfig {
     /** Scale parameter for approximateEqual function precision (default: 0.001) */
     scale?: number;
+    /** Maximum body length for small body detection (default: 0.1) */
+    maxBodyLength?: number;
 }
 
 /**
  * Default configuration for BullishSpinningTop pattern.
  */
 export const DEFAULT_BULLISH_SPINNING_TOP_CONFIG: IBullishSpinningTopConfig = {
-    ...DEFAULT_CANDLESTICK_CONFIG
+    ...DEFAULT_CANDLESTICK_CONFIG,
+    maxBodyLength: 1 // Body should be <= 1 price units to be considered "small"
 };
 
 export default class BullishSpinningTop extends CandlestickFinder {
+    /** Maximum body length for small body detection */
+    maxBodyLength: number;
+
     constructor(config?: IBullishSpinningTopConfig) {
         const finalConfig = { ...DEFAULT_BULLISH_SPINNING_TOP_CONFIG, ...config };
         super(finalConfig);
         this.name = 'BullishSpinningTop';
         this.requiredCount = 1;
+        this.maxBodyLength = finalConfig.maxBodyLength!;
     }
 
     logic(data: StockData) {
@@ -38,14 +44,20 @@ export default class BullishSpinningTop extends CandlestickFinder {
 
         // Must be bullish (close > open)
         let isBullish = daysClose > daysOpen;
-
         let bodyLength = Math.abs(daysClose - daysOpen);
+
         // For bullish candles: top of body is close, bottom is open
         let upperShadowLength = Math.abs(daysHigh - daysClose);
         let lowerShadowLength = Math.abs(daysOpen - daysLow);
 
-        // Spinning top: body length < both shadow lengths (relative comparison, no scale dependency)
+        // Check if body is small based on fixed length threshold
+        let hasSmallBody = bodyLength <= this.maxBodyLength;
+
+        console.log(bodyLength, upperShadowLength, lowerShadowLength, hasSmallBody, isBullish);
+
+        // Spinning top: bullish + small body + body length < both shadow lengths
         let isBullishSpinningTop = isBullish &&
+                                 hasSmallBody &&
                                  bodyLength < upperShadowLength &&
                                  bodyLength < lowerShadowLength;
 

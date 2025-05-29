@@ -3,26 +3,32 @@ import CandlestickFinder, { ICandlestickConfig, DEFAULT_CANDLESTICK_CONFIG } fro
 
 /**
  * Configuration interface for BearishSpinningTop pattern.
- * Only uses the scale parameter for approximateEqual function precision.
  */
 export interface IBearishSpinningTopConfig extends ICandlestickConfig {
     /** Scale parameter for approximateEqual function precision (default: 0.001) */
     scale?: number;
+    /** Maximum body length for small body detection (default: 0.1) */
+    maxBodyLength?: number;
 }
 
 /**
  * Default configuration for BearishSpinningTop pattern.
  */
 export const DEFAULT_BEARISH_SPINNING_TOP_CONFIG: IBearishSpinningTopConfig = {
-    ...DEFAULT_CANDLESTICK_CONFIG
+    ...DEFAULT_CANDLESTICK_CONFIG,
+    maxBodyLength: 1 // Body should be <= 1 price units to be considered "small"
 };
 
 export default class BearishSpinningTop extends CandlestickFinder {
+    /** Maximum body length for small body detection */
+    maxBodyLength: number;
+
     constructor(config?: IBearishSpinningTopConfig) {
         const finalConfig = { ...DEFAULT_BEARISH_SPINNING_TOP_CONFIG, ...config };
         super(finalConfig);
         this.name = 'BearishSpinningTop';
         this.requiredCount = 1;
+        this.maxBodyLength = finalConfig.maxBodyLength!;
     }
 
     logic(data: StockData) {
@@ -40,12 +46,18 @@ export default class BearishSpinningTop extends CandlestickFinder {
         let isBearish = daysClose < daysOpen;
 
         let bodyLength = Math.abs(daysClose - daysOpen);
+        let totalRange = daysHigh - daysLow;
+
         // For bearish candles: top of body is open, bottom is close
         let upperShadowLength = Math.abs(daysHigh - daysOpen);
         let lowerShadowLength = Math.abs(daysClose - daysLow);
 
-        // Spinning top: body length < both shadow lengths (relative comparison, no scale dependency)
+        // Check if body is small based on fixed length threshold
+        let hasSmallBody = bodyLength <= this.maxBodyLength;
+
+        // Spinning top: bearish + small body + body length < both shadow lengths
         let isBearishSpinningTop = isBearish &&
+                                 hasSmallBody &&
                                  bodyLength < upperShadowLength &&
                                  bodyLength < lowerShadowLength;
 
