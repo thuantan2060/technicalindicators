@@ -53,8 +53,6 @@ export default class BullishSpinningTop extends CandlestickFinder {
         // Check if body is small based on fixed length threshold
         let hasSmallBody = bodyLength <= this.maxBodyLength;
 
-        console.log(bodyLength, upperShadowLength, lowerShadowLength, hasSmallBody, isBullish);
-
         // Spinning top: bullish + small body + body length < both shadow lengths
         let isBullishSpinningTop = isBullish &&
                                  hasSmallBody &&
